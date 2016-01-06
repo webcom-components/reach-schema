@@ -1,0 +1,276 @@
+{
+  "description": "The 'root' of the data model used by Reach.\n\n---\nBy default located at the root of your namespace (*/base/mynamespace/.reach/*) or on a specified path (i.e. */base/mynamespace/path/for/reach/*)",
+  "properties": {
+    ".iceServers": {
+      "description": "Configured ICE servers",
+      "type": "array",
+      "items": {
+        "$ref": "ICEServer"
+      }
+    },
+    ".webrtc": {
+      "description": "Peer connections (SDP exchange)",
+      "type": "array",
+      "items": {"$ref": "PeerConnection"}
+    },
+    "users": {
+      "description": "Connected users",
+      "type": "array",
+      "items": {
+        "$ref": "User"
+      }
+    },
+    "rooms": {
+      "description": "Active rooms",
+      "type": "array",
+      "items": {
+        "$ref": "Room"
+      }
+    }
+  },
+  "required": [
+    "users",
+    "rooms"
+  ],
+  "ICEServer": {
+    "id": "ICEServer",
+    "description": "ICE server configuration",
+    "properties": {
+      "url": {
+        "type": "string"
+      },
+      "user": {
+        "type": "string"
+      },
+      "pwd": {
+        "type": "string"
+      }
+    },
+    "required": ["url"]
+  },
+  "User": {
+    "id": "User",
+    "properties": {
+      "name": {
+        "description": "User's display name",
+        "type": "string"
+      },
+      "email": {
+        "description": "User's email",
+        "type": "string"
+      },
+      "id": {
+        "description": "The *simplelogin:id* if the user is authenticated",
+        "type": "string"
+      },
+      "invites": {
+        "description": "List of the user's received invitations",
+        "type": "array",
+        "items": {
+          "$ref": "Invite"
+        }
+      },
+      "devices": {
+        "description": "List of the user's connected devices",
+        "type": "array",
+        "items": {
+          "$ref": "Device"
+        }
+      }
+    }
+  },
+  "Device": {
+    "id": "Device",
+    "properties": {
+      "id": {
+        "description": "A unique ID",
+        "type": "string"
+      },
+      "sdk_version": {
+        "description": "Reach SDK used by the client. (ios_0.2.1, js_0.2.2, android_0.2.1, ...)",
+        "type": "string"
+      },
+      "os": {
+        "description": "Client OS version. Only with Native SDK.(ios_9, android_5.1, ...)",
+        "type": "string"
+      },
+      "userAgent": {
+        "description": "The browser's userAgent. Only with JS SDK.",
+        "type": "string"
+      }
+    },
+    "required": [
+      "id",
+      "sdk_version"
+    ]
+  },
+  "Invite": {
+    "id": "Invite",
+    "properties": {
+      "from": {
+        "description": "Name of the sender path in */users*",
+        "type": "string"
+      },
+      "roomId": {
+        "type": "string"
+      },
+      "status": {
+        "enum": [
+          "ONGOING",
+          "ACCEPTED",
+          "REJECTED",
+          "CANCELED"
+        ]
+      },
+      ".creation": {
+        "description": "The invitation creation timestamp",
+        "type": "number"
+      },
+      ".end": {
+        "description": "The invitation rejection/cancelation timestamp",
+        "type": "number"
+      }
+    },
+    "required": [
+      "from",
+      "roomId"
+    ]
+  },
+  "Permission": {
+    "id": "Permission",
+    "description": "Room permissions\n---\n*OWNER* : Only the owner\n*MODERATOR* : All room moderators (the *OWNER* is also a moderator)\n*PARTICIPANTS* : All room participants (i.e. users that received an invite) \n*null* : Everybody",
+    "enum": [
+      "OWNER",
+      "MODERATOR",
+      "PARTICIPANT",
+      "null"
+    ]
+  },
+  "Room": {
+    "id": "Room",
+    "properties": {
+      "name": {
+        "description": "Display name of the room. If not unique, warn or increment ?",
+        "type": "string"
+      },
+      "owner": {
+        "description": "Name of the owner path in */users*",
+        "type": "string"
+      },
+      "rights": {
+        "description": "Room permissions",
+        "properties": {
+          "see": {
+            "description": "Who can see the room ?",
+            "$ref": "Permission"
+          },
+          "join": {
+            "description": "Who can join the room ?",
+            "$ref": "Permission"
+          },
+          "invite": {
+            "description": "Who can invite new participants to the room ?",
+            "$ref": "Permission"
+          }
+        }
+      },
+      "status": {
+        "enum": [
+          "OPENED",
+          "CLOSED"
+        ]
+      },
+      "participants": {
+        "description": "List of the room participants",
+        "type": "array",
+        "items": {"$ref": "Participant"}
+      },
+      ".created": {
+        "description": "The room creation timestamp",
+        "type": "number"
+      },
+      ".closed": {
+        "description": "The room close timestamp",
+        "type": "number"
+      }
+    },
+    "required": [
+      "name",
+      "owner",
+      "status"
+    ]
+  },
+  "Participant": {
+    "id": "Participant",
+    "properties": {
+      "status": {
+        "enum": [
+          "CONNECTED",
+          "WAS_CONNECTED",
+          "NOT_CONNECTED"
+        ]
+      },
+      "role": {
+        "description": "The participant's role. Works with the room permissions.",
+        "enum": [
+          "OWNER",
+          "MODERATOR",
+          "null"
+        ]
+      },
+      ".joined": {
+        "description": "Timestamp. Can be used to determine which *MODERATOR* becomes the new *OWNER*",
+        "type": "number"
+      }
+    },
+    "required": ["status"]
+  },
+  "PeerConnection": {
+    "id": "PeerConnection",
+    "properties": {
+      "local": {
+        "description": "Local stream",
+        "$ref": "PeerConnectionPart"
+      },
+      "remote": {
+        "description": "Remote stream",
+        "$ref": "PeerConnectionPart"
+      }
+    }
+  },
+  "PeerConnectionPart": {
+    "id": "PeerConnectionPart",
+    "properties": {
+      "answer": {
+        "description": "Raw SDP answer",
+        "type": "string"
+      },
+      "offer": {
+        "description": "Raw SDP offer",
+        "type": "string"
+      },
+      "ice": {
+        "type": "array",
+        "items": {"$ref": "ICECandidate"}
+      }
+    }
+  },
+  "ICECandidate": {
+    "id": "ICECandidate",
+    "description": "the RTCIceCandidate from the RTCPeerConnectionIceEvent raised by RTCPeerConnection.onicecandidate (see [w3c draft](http://w3c.github.io/webrtc-pc/#rtcicecandidate-interface))",
+    "properties": {
+      "candidate": {
+        "description": "This carries the *candidate-attribute* as defined in section 15.1 of [ICE](http://w3c.github.io/webrtc-pc/#bib-ICE).",
+        "type": "string"
+      },
+      "sdpMid": {
+        "description": "If not *null*, this contains the identifier of the 'media stream identification' as defined in [RFC5888](http://w3c.github.io/webrtc-pc/#bib-RFC5888) for the media component this candidate is associated with.",
+        "type": "string"
+      },
+      "sdpMLineIndex": {
+        "description": "If not *null*, this indicates the index (starting at zero) of the [media description](http://w3c.github.io/webrtc-pc/#dfn-media-description) in the SDP this candidate is associated with.",
+        "type": "number"
+      }
+    }
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "name": "webcom-reach-schema",
+  "authors": [
+    "Julien Delage <julien.delage@orange.com>"
+  ],
+  "description": "JSON Schema for Reach",
+  "main": "",
+  "moduleType": [],
+  "keywords": [
+    "json-schema",
+    "webcom",
+    "webcom-reach"
+  ],
+  "license": "MIT",
+  "homepage": "http://webcom-components.github.io/reach-schema#/reach-schema/latest/reach.json",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "devDependencies": {
+    "docson": "*"
+  }
+}
