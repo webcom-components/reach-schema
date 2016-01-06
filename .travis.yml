@@ -4,6 +4,4 @@ node_js:
 before_script:
   - npm install -g bower
   - bower install
-script: bash ./deploy-gh-pages.sh
-env:
-  - LATEST_DRAFT=draft-00
+script: bash ./.tools/deploy-gh-pages.sh

@@ -1,0 +1,8 @@
+node_modules/
+dist/
+bower.json
+package.json
+AUTHORS
+LICENSE
+.*
+*.md
