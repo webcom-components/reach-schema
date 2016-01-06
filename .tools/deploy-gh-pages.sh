@@ -18,10 +18,10 @@ cp -R $(node ./.tools/export.js) out/latest
 # Copy README & LICENSE
 cp README.md LICENSE out/
 
-#cd out
-#git init
-#git config user.name "webcomOps"
-#git config user.email "webcom.ops@orange.com"
-#git add .
-#git commit -m "Deploy to GitHub Pages"
-#git push --force --quiet "https://${GH_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git" master:gh-pages > /dev/null 2>&1
+cd out
+git init
+git config user.name "webcomOps"
+git config user.email "webcom.ops@orange.com"
+git add .
+git commit -m "Deploy to GitHub Pages"
+git push --force --quiet "https://${GH_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git" master:gh-pages > /dev/null 2>&1
