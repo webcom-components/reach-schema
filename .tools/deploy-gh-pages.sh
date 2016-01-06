@@ -12,7 +12,7 @@ mkdir out;
 # Copy docson files
 cp -R bower_components/docson/css bower_components/docson/lib bower_components/docson/templates bower_components/docson/docson.js bower_components/docson/index.html bower_components/docson/widget.js out/
 # Copy drafts
-cp -R draft-* out/
+cp -R draft-* legacy out/
 # Copy latest draft
 cp -R $(node ./.tools/export.js) out/latest
 # Copy README & LICENSE
