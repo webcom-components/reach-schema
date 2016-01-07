@@ -22,7 +22,7 @@ if(version.list.length === 0) {
 				BrowserSync.create('draft').init({
 					server: true,
 					files: ['draft-*/*', 'legacy/*'],
-					startPath: `bower_components/docson/#/../../${v}/reach.json`
+					startPath: `bower_components/docson/#/../../${v}/schema.json`
 				});
 			}
 		}

@@ -1,0 +1,48 @@
+{
+  "id": "reach/legacy",
+  "$schema": "https://webcom-components.github.io/reach-schema/legacy/schema.json#",
+  "description": "The 'root' of the data model used by the legacy version.\n\n---\nAlways located at the root of the specified namespace",
+  "properties": {
+    ".iceServers": {
+      "description": "Configured ICE servers",
+      "type": "array",
+      "items": {
+        "$ref": "ICEServer.json"
+      }
+    },
+    "webrtc": {
+      "description": "Peer connections (SDP exchange)",
+      "type": "array",
+      "items": {"$ref": "PeerConnection.json"}
+    },
+    "reach": {
+      "type": "object",
+      "properties": {
+        "userList": {
+          "type": "array",
+          "items": {
+            "$ref": "User.json"
+          }
+        },
+        "invitationList": {
+          "type": "array",
+          "description": "A list of each user's invites. (*/reach/invitationList/&lt;USER_ID&gt;/...*/",
+          "items": {
+            "$ref": "UserInvite.json"
+          }
+        }
+      }
+    },
+    "roomsList": {
+      "description": "List of rooms",
+      "type": "array",
+      "items": {
+        "$ref": "Room.json"
+      }
+    }
+  },
+  "required": [
+    "users",
+    "rooms"
+  ]
+}

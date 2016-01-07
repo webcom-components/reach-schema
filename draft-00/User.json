@@ -1,0 +1,32 @@
+{
+  "id": "User",
+  "$schema": "https://webcom-components.github.io/reach-schema/draft-00/User.json",
+  "properties": {
+    "name": {
+      "description": "User's display name",
+      "type": "string"
+    },
+    "email": {
+      "description": "User's email",
+      "type": "string"
+    },
+    "id": {
+      "description": "The *simplelogin:id* if the user is authenticated",
+      "type": "string"
+    },
+    "invites": {
+      "description": "List of the user's received invitations",
+      "type": "array",
+      "items": {
+        "$ref": "Invite.json"
+      }
+    },
+    "devices": {
+      "description": "List of the user's connected devices",
+      "type": "array",
+      "items": {
+        "$ref": "Device.json"
+      }
+    }
+  }
+}

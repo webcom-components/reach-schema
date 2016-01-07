@@ -1,0 +1,11 @@
+{
+  "id": "Permission",
+  "$schema": "https://webcom-components.github.io/reach-schema/draft-00/Permission.json",
+  "description": "Room permissions\n---\n*OWNER* : Only the owner\n*MODERATOR* : All room moderators (the *OWNER* is also a moderator)\n*PARTICIPANTS* : All room participants (i.e. users that received an invite) \n*null* : Everybody",
+  "enum": [
+    "OWNER",
+    "MODERATOR",
+    "PARTICIPANT",
+    "null"
+  ]
+}

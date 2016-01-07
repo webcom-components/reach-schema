@@ -1,0 +1,18 @@
+{
+  "id": "PeerConnectionPart",
+  "$schema": "https://webcom-components.github.io/reach-schema/draft-00/PeerConnectionPart.json",
+  "properties": {
+    "answer": {
+      "description": "Raw SDP answer",
+      "type": "string"
+    },
+    "offer": {
+      "description": "Raw SDP offer",
+      "type": "string"
+    },
+    "ice": {
+      "type": "array",
+      "items": {"$ref": "ICECandidate.json"}
+    }
+  }
+}

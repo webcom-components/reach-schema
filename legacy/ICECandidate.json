@@ -1,0 +1,19 @@
+{
+  "id": "ICECandidate",
+  "$schema": "https://webcom-components.github.io/reach-schema/legacy/ICECandidate.json#",
+  "description": "the RTCIceCandidate from the RTCPeerConnectionIceEvent raised by RTCPeerConnection.onicecandidate (see [w3c draft](http://w3c.github.io/webrtc-pc/#rtcicecandidate-interface))",
+  "properties": {
+    "candidate": {
+      "description": "This carries the *candidate-attribute* as defined in section 15.1 of [ICE](http://w3c.github.io/webrtc-pc/#bib-ICE).",
+      "type": "string"
+    },
+    "sdpMid": {
+      "description": "If not *null*, this contains the identifier of the 'media stream identification' as defined in [RFC5888](http://w3c.github.io/webrtc-pc/#bib-RFC5888) for the media component this candidate is associated with.",
+      "type": "string"
+    },
+    "sdpMLineIndex": {
+      "description": "If not *null*, this indicates the index (starting at zero) of the [media description](http://w3c.github.io/webrtc-pc/#dfn-media-description) in the SDP this candidate is associated with.",
+      "type": "number"
+    }
+  }
+}

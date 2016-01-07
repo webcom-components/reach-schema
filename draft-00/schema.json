@@ -1,0 +1,37 @@
+{
+  "id": "reach/draft-00",
+  "$schema": "https://webcom-components.github.io/reach-schema/draft-00/schema.json#",
+  "description": "The 'root' of the data model used by Reach.\n\n---\nBy default located at the root of your namespace (*/base/mynamespace/.reach/*) or on a specified path (i.e. */base/mynamespace/path/for/reach/*)",
+  "properties": {
+    ".iceServers": {
+      "description": "Configured ICE servers",
+      "type": "array",
+      "items": {
+        "$ref": "ICEServer.json"
+      }
+    },
+    ".webrtc": {
+      "description": "Peer connections (SDP exchange)",
+      "type": "array",
+      "items": {"$ref": "PeerConnection.json"}
+    },
+    "users": {
+      "description": "Connected users",
+      "type": "array",
+      "items": {
+        "$ref": "User.json"
+      }
+    },
+    "rooms": {
+      "description": "Active rooms",
+      "type": "array",
+      "items": {
+        "$ref": "Room.json"
+      }
+    }
+  },
+  "required": [
+    "users",
+    "rooms"
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "id": "Device",
+  "$schema": "https://webcom-components.github.io/reach-schema/draft-00/Device.json#",
+  "properties": {
+    "id": {
+      "description": "A unique ID",
+      "type": "string"
+    },
+    "sdk_version": {
+      "description": "Reach SDK used by the client. (ios_0.2.1, js_0.2.2, android_0.2.1, ...)",
+      "type": "string"
+    },
+    "os": {
+      "description": "Client OS version. Only with Native SDK.(ios_9, android_5.1, ...)",
+      "type": "string"
+    },
+    "userAgent": {
+      "description": "The browser's userAgent. Only with JS SDK.",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "sdk_version"
+  ]
+}

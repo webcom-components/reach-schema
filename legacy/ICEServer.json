@@ -1,0 +1,17 @@
+{
+  "id": "ICEServer",
+  "$schema": "https://webcom-components.github.io/reach-schema/legacy/ICEServer.json",
+  "description": "ICE server configuration",
+  "properties": {
+    "url": {
+      "type": "string"
+    },
+    "user": {
+      "type": "string"
+    },
+    "pwd": {
+      "type": "string"
+    }
+  },
+  "required": ["url"]
+}

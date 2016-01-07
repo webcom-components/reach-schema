@@ -1,0 +1,26 @@
+{
+  "id": "Participant",
+  "$schema": "https://webcom-components.github.io/reach-schema/draft-00/Participant.json",
+  "properties": {
+    "status": {
+      "enum": [
+        "CONNECTED",
+        "WAS_CONNECTED",
+        "NOT_CONNECTED"
+      ]
+    },
+    "role": {
+      "description": "The participant's role. Works with the room permissions.",
+      "enum": [
+        "OWNER",
+        "MODERATOR",
+        "null"
+      ]
+    },
+    ".joined": {
+      "description": "Timestamp. Can be used to determine which *MODERATOR* becomes the new *OWNER*",
+      "type": "number"
+    }
+  },
+  "required": ["status"]
+}

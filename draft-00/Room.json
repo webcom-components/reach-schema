@@ -1,0 +1,55 @@
+{
+  "id": "Room",
+  "$schema": "https://webcom-components.github.io/reach-schema/draft-00/Room.json",
+  "properties": {
+    "name": {
+      "description": "Display name of the room. If not unique, warn or increment ?",
+      "type": "string"
+    },
+    "owner": {
+      "description": "Name of the owner path in */users*",
+      "type": "string"
+    },
+    "rights": {
+      "description": "Room permissions",
+      "properties": {
+        "see": {
+          "description": "Who can see the room ?",
+          "$ref": "Permission.json"
+        },
+        "join": {
+          "description": "Who can join the room ?",
+          "$ref": "Permission.json"
+        },
+        "invite": {
+          "description": "Who can invite new participants to the room ?",
+          "$ref": "Permission.json"
+        }
+      }
+    },
+    "status": {
+      "enum": [
+        "OPENED",
+        "CLOSED"
+      ]
+    },
+    "participants": {
+      "description": "List of the room participants",
+      "type": "array",
+      "items": {"$ref": "Participant.json"}
+    },
+    ".created": {
+      "description": "The room creation timestamp",
+      "type": "number"
+    },
+    ".closed": {
+      "description": "The room close timestamp",
+      "type": "number"
+    }
+  },
+  "required": [
+    "name",
+    "owner",
+    "status"
+  ]
+}

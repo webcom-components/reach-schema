@@ -1,0 +1,9 @@
+{
+  "id": "UserInvite",
+  "$schema": "https://webcom-components.github.io/reach-schema/legacy/UserInvite.json",
+  "description": "List of all invitations received by a user",
+  "type": "array",
+  "items": {
+    "$ref": "Invite.json"
+  }
+}

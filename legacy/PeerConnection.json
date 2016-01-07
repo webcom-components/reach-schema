@@ -1,0 +1,14 @@
+{
+  "id": "PeerConnection",
+  "$schema": "https://webcom-components.github.io/reach-schema/legacy/PeerConnection.json",
+  "properties": {
+    "local": {
+      "description": "Local stream",
+      "$ref": "PeerConnectionPart.json"
+    },
+    "remote": {
+      "description": "Remote stream",
+      "$ref": "PeerConnectionPart.json"
+    }
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "id": "Room",
+  "$schema": "https://webcom-components.github.io/reach-schema/legacy/Room.json",
+  "properties": {
+    "commonDataList": {
+      "description": "Basic room information",
+      "properties": {
+        "owner": {
+          "description": "Id of the owner as defined in '*reach/userList/&lt;USER_ID&gt;*'",
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "OPENED",
+            "CLOSED",
+            "null"
+          ]
+        }
+      }
+    },
+    "participantList": {
+      "description": "List of the room participants",
+      "type": "array",
+      "items": {
+        "$ref": "Participant.json"
+      }
+    }
+  },
+  "required": [
+    "commonDataList",
+    "participantList"
+  ]
+}
