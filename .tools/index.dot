@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>reach-schema</title>
+    <style type="text/css">
+        body {
+            font-family: AlegreyaSans,Helvetica,Arial,sans-serif;
+            margin: 0
+        }
+        nav {
+            padding: 5px 0;
+            background-color: #1f1f1f;
+        }
+        nav ul {
+            margin: 0;
+            padding: 0 5px;
+            list-style: none;
+            display: flex;
+            flex-direction: row;
+        }
+        nav li {
+            padding: 10px;
+        }
+        nav a {
+            color: #ddd;
+            text-decoration: none;
+        }
+        nav a:hover {
+            color: #f50;
+        }
+        {{~it.versions :version:index}}
+            #{{=version}}:target {
+                font-weight: bold;
+                color: #eee;
+            }
+        {{~}}
+    </style>
+    <script src="docson/lib/require.js"></script>
+    <script>
+        require(["docson/lib/jquery"], function() {
+            $(function () {
+                function update(v) {
+                    window.document.title = "reach-schema::" + v;
+                    var url = '../' + v + '/schema.json';
+                    var frame = $('iframe')[0];
+                    frame.id = url;
+                    frame.contentDocument.location.hash = '#' + url;
+                }
+                $(window).on('hashchange', function () {
+                    update(window.location.hash.substring(1));
+                });
+                if(!window.location.hash) {
+                    window.location.hash = '#latest'
+                } else {
+                    update(window.location.hash.substring(1));
+                }
+            });
+        });
+    </script>
+</head>
+<body>
+<nav>
+    <ul>
+    {{~it.versions :version:index}}
+        <li><a href="#{{=version}}" id="{{=version}}">{{=version}}</a></li>
+    {{~}}
+    </ul>
+</nav>
+<script src="docson/widget.js" data-schema="../latest/schema.json"></script>
+</body>
+</html>

@@ -7,16 +7,18 @@ cd "`dirname \"$0\"`" && cd ..
 rm -rf out || exit 0;
 
 # Recreate output folder
-mkdir out;
+mkdir -p out/docson;
 
 # Copy docson files
-cp -R bower_components/docson/css bower_components/docson/lib bower_components/docson/templates bower_components/docson/docson.js bower_components/docson/index.html bower_components/docson/widget.js out/
+cp -R bower_components/docson/css bower_components/docson/lib bower_components/docson/templates bower_components/docson/docson.js bower_components/docson/index.html bower_components/docson/widget.js out/docson/
 # Copy drafts
 cp -R draft-* legacy out/
 # Copy latest draft
 cp -R $(node ./.tools/export.js) out/latest
 # Copy README & LICENSE
 cp README.md LICENSE out/
+# Generate index
+node ./.tools/site.js >> out/index.html
 
 cd out
 git init
