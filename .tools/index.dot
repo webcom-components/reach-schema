@@ -42,7 +42,7 @@
             $(function () {
                 function update(v) {
                     window.document.title = "reach-schema::" + v;
-                    var url = '../' + v + '/schema.json';
+                    var url = '../' + (v === 'latest' ? '{{=it.latest}}' : v) + '/schema.json';
                     var frame = $('iframe')[0];
                     frame.id = url;
                     frame.contentDocument.location.hash = '#' + url;

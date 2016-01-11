@@ -1,10 +1,8 @@
 #!/usr/bin/env node
 
-require('babel-core/register');
-
-const version  = require('./version');
-const prompt = require('inquirer').prompt;
-const BrowserSync  = require('browser-sync');
+import * as version from './version';
+import {prompt} from 'inquirer';
+import BrowserSync from 'browser-sync';
 
 if(version.list.length === 0) {
 	process.exit(0);
