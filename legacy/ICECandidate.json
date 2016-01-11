@@ -7,11 +7,11 @@
       "description": "This carries the *candidate-attribute* as defined in section 15.1 of [ICE](http://w3c.github.io/webrtc-pc/#bib-ICE).",
       "type": "string"
     },
-    "sdpMid": {
+    "id": {
       "description": "If not *null*, this contains the identifier of the 'media stream identification' as defined in [RFC5888](http://w3c.github.io/webrtc-pc/#bib-RFC5888) for the media component this candidate is associated with.",
       "type": "string"
     },
-    "sdpMLineIndex": {
+    "label": {
       "description": "If not *null*, this indicates the index (starting at zero) of the [media description](http://w3c.github.io/webrtc-pc/#dfn-media-description) in the SDP this candidate is associated with.",
       "type": "number"
     }

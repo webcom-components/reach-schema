@@ -1,0 +1,19 @@
+{
+  "id": "RoomPeerConnection",
+  "$schema": "https://webcom-components.github.io/reach-schema/legacy/RoomPeerConnection.json",
+  "description": "PeerConnections within a room",
+  "properties": {
+    "roomId": {
+      "description": "Id of the room as defined in '*roomsList/&lt;ROOM_ID&gt;/*'",
+      "type": "string"
+    },
+    "devices": {
+      "description": "List of the user's connected devices",
+      "type": "array",
+      "items": {
+        "$ref": "Device.json"
+      }
+    }
+  },
+  "required": ["roomId"]
+}

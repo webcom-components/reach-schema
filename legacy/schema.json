@@ -3,11 +3,16 @@
   "$schema": "https://webcom-components.github.io/reach-schema/legacy/schema.json#",
   "description": "The 'root' of the data model used by the legacy version.\n\n---\nAlways located at the root of the specified namespace",
   "properties": {
-    ".iceServers": {
-      "description": "Configured ICE servers",
-      "type": "array",
-      "items": {
-        "$ref": "ICEServer.json"
+    "config": {
+      "type": "object",
+      "properties": {
+        "iceServers": {
+          "description": "Configured ICE servers",
+          "type": "array",
+          "items": {
+            "$ref": "ICEServer.json"
+          }
+        }
       }
     },
     "webrtc": {
@@ -26,7 +31,7 @@
         },
         "invitationList": {
           "type": "array",
-          "description": "A list of each user's invites. (*/reach/invitationList/&lt;USER_ID&gt;/...*/",
+          "description": "A list of each user's invites. (*/reach/invitationList/__USER_ID__/*/",
           "items": {
             "$ref": "UserInvite.json"
           }

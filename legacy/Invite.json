@@ -1,16 +1,18 @@
 {
   "id": "Invite",
   "$schema": "https://webcom-components.github.io/reach-schema/legacy/Invite.json",
+  "description": "The invitation",
   "properties": {
     "from": {
-      "description": "Id of the sender as defined in '*reach/userList/&lt;USER_ID&gt;*'",
+      "description": "Id of the sender as defined in '*reach/userList/__USER_ID__/*'",
       "type": "string"
     },
     "room": {
-      "descriptions": "Id of the owner as defined in '*roomsList/&lt;ROOM_ID&gt;/*'",
+      "description": "Id of the room as defined in '*roomsList/__ROOM_ID__/*'",
       "type": "string"
     },
     "status": {
+      "description": "The invitation status.",
       "enum": [
         "ONGOING",
         "ACCEPTED",
@@ -27,9 +29,9 @@
       "type": "number"
     },
     "topic": {
+      "description": "The type of the stream",
       "enum": ["audio", "video", "audio-video", "chat"]
     }
-
   },
   "required": [
     "from",

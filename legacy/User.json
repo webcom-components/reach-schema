@@ -1,12 +1,12 @@
 {
   "id": "User",
   "$schema": "https://webcom-components.github.io/reach-schema/legacy/User.json",
-  "description": "The user ID is the path name (*/reach/userList/__USER_ID__/...*)",
+  "description": "The user ID is the path name (*/reach/userList/__USER_ID__/*)",
   "properties": {
     "wasInsideReach": {
       "type": "boolean"
     },
-    "devices": {
+    "connectedList": {
       "description": "List of the user's connected devices",
       "type": "array",
       "items": {

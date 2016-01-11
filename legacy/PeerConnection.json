@@ -2,13 +2,14 @@
   "id": "PeerConnection",
   "$schema": "https://webcom-components.github.io/reach-schema/legacy/PeerConnection.json",
   "properties": {
-    "local": {
-      "description": "Local stream",
+    "<localAppID>": {
+      "description": "Local stream publish. localAppId is the appId for the publisher",
       "$ref": "PeerConnectionPart.json"
     },
-    "remote": {
-      "description": "Remote stream",
+    "<remoteAppID>": {
+      "description": "Remote stream subscribe. remoteAppID is the appId for the subscriber",
       "$ref": "PeerConnectionPart.json"
     }
-  }
+  },
+  "required": ["roomId"]
 }

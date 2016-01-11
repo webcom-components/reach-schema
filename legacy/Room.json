@@ -6,7 +6,7 @@
       "description": "Basic room information",
       "properties": {
         "owner": {
-          "description": "Id of the owner as defined in '*reach/userList/&lt;USER_ID&gt;*'",
+          "description": "Id of the owner as defined in '*reach/userList/__USER_ID__/*'",
           "type": "string"
         },
         "status": {
@@ -23,6 +23,13 @@
       "type": "array",
       "items": {
         "$ref": "Participant.json"
+      }
+    },
+    "publishedMediaList": {
+      "description": "List of streams made available by a participant to the room.",
+      "type": "array",
+      "items": {
+        "$ref": "Stream.json"
       }
     }
   },

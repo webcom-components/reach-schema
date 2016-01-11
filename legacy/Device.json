@@ -1,26 +1,54 @@
 {
   "id": "Device",
   "$schema": "https://webcom-components.github.io/reach-schema/legacy/Device.json#",
+  "description": "User device. The device's ID is defined in '*reach/userList/__USER_ID__/connectedList/__DEVICE_ID__/*'",
   "properties": {
-    "id": {
-      "description": "A unique ID",
-      "type": "string"
+    "description": {
+      "description": "The device details",
+      "type": "object",
+      "properties": {
+        "appInstanceId": {
+          "description": "The device's ID as defined in '*reach/userList/__USER_ID__/connectedList/__DEVICE_ID__/*'",
+          "type": "string"
+        },
+        "navigator": {
+          "type": "object",
+          "description": "Browser infos if device is a Browser",
+          "properties": {
+            "appCodeName": {"type": "string"},
+            "appName": {"type": "string"},
+            "appVersion": {"type": "string"},
+            "cookieEnabled": {"type": "boolean"},
+            "language": {"type": "string"},
+            "onLine": {"type": "boolean"},
+            "platform": {"type": "string"},
+            "product": {"type": "string"},
+            "productSub": {"type": "string"},
+            "userAgent": {"type": "string"},
+            "vendor": {"type": "string"}
+          }
+        },
+        "android": {
+          "type": "object",
+          "description": "Device infos for Android app",
+          "properties": {
+            "os/Build/Version/CODENAME": {"type": "string"},
+            "os/Build/Version/INCREMENTAL": {"type": "string"},
+            "os/Build/Version/RELEASE": {"type": "string"},
+            "os/Build/Version/SDK_INT": {"type": "number"},
+            "System/Properties": {"type": "object"},
+            "System/Environment": {"type": "object"}
+          }
+        },
+        "required": ["appInstanceId"]
+      }
     },
-    "sdk_version": {
-      "description": "Reach SDK used by the client. (ios_0.2.1, js_0.2.2, android_0.2.1, ...)",
-      "type": "string"
-    },
-    "os": {
-      "description": "Client OS version. Only with Native SDK.(ios_9, android_5.1, ...)",
-      "type": "string"
-    },
-    "userAgent": {
-      "description": "The browser's userAgent. Only with JS SDK.",
-      "type": "string"
+    "status": {
+      "description": "Device status.",
+      "enum": ["CONNECTED"]
     }
   },
   "required": [
-    "id",
-    "sdk_version"
+    "description", "status"
   ]
 }

@@ -6,10 +6,10 @@
     "url": {
       "type": "string"
     },
-    "user": {
+    "username": {
       "type": "string"
     },
-    "pwd": {
+    "credential": {
       "type": "string"
     }
   },

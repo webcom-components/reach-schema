@@ -1,0 +1,14 @@
+{
+  "id": "SDP",
+  "$schema": "https://webcom-components.github.io/reach-schema/legacy/SDP.json",
+  "properties": {
+    "sdp": {
+      "description": "raw SDP content",
+      "type": "string"
+    },
+    "type": {
+      "description": "SDP type",
+      "enum": ["offer", "answer"]
+    }
+  }
+}
