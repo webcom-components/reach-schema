@@ -1,0 +1,9 @@
+{
+  "id": "PeerConnections",
+  "$schema": "https://webcom-components.github.io/reach-schema/draft-00/Connection.json",
+  "description": "List of PeerConnections between two devices. (/_webrtc/**$user1DeviceId**-**$user2DeviceId**/).",
+  "type": "array",
+  "items": {
+    "$ref": "PeerConnection.json"
+  }
+}

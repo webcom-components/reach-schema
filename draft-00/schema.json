@@ -1,30 +1,66 @@
 {
   "id": "reach/draft-00",
   "$schema": "https://webcom-components.github.io/reach-schema/draft-00/schema.json#",
-  "description": "The 'root' of the data model used by Reach.\n\n---\nBy default located at the root of your namespace (*/base/mynamespace/.reach/*) or on a specified path (i.e. */base/mynamespace/path/for/reach/*)",
+  "description": "The 'root' of the data model used by Reach.\n\n---\nBy default located at the root of your namespace (*/base/mynamespace/_reach/*) or on a specified path (i.e. */base/mynamespace/path/for/reach/*)",
   "properties": {
-    ".iceServers": {
+    "_iceServers": {
       "description": "Configured ICE servers",
       "type": "array",
       "items": {
         "$ref": "ICEServer.json"
       }
     },
-    ".webrtc": {
+    "_webrtc": {
       "description": "Peer connections (SDP exchange)",
       "type": "array",
-      "items": {"$ref": "PeerConnection.json"}
+      "items": {
+        "$ref": "PeerConnections.json"
+      }
+    },
+    "_history": {
+      "description": "Archived data.\n\n---\n- Should PeerConnections also be archived (legal purpose ?)\n- Should this be an option ?",
+      "type": "object",
+      "properties": {
+        "users": {
+          "description": "Archived users",
+          "type": "array",
+          "items": {
+            "$ref": "User.json"
+          }
+        },
+        "invites": {
+          "description": "Archived invites",
+          "type": "array",
+          "items": {
+            "$ref": "UserInvitations.json"
+          }
+        },
+        "rooms": {
+          "description": "Archived rooms",
+          "type": "array",
+          "items": {
+            "$ref": "Room.json"
+          }
+        }
+      }
     },
     "users": {
-      "description": "Connected users",
       "type": "array",
+      "description": "List of *&lt;User&gt;* identified by their __$userId__ (/users/__$userId__/*&lt;User&gt;*)",
       "items": {
         "$ref": "User.json"
       }
     },
-    "rooms": {
-      "description": "Active rooms",
+    "invites": {
       "type": "array",
+      "description": "List of *&lt;Invitation&gt;* sorted by &lt;User&gt;. Each &lt;User&gt; is identified by its __$userId__.",
+      "items": {
+        "$ref": "UserInvitations.json"
+      }
+    },
+    "rooms": {
+      "type": "array",
+      "description": "List of *&lt;Room&gt;* identified by their __$roomId__ (/rooms/__$roomId__/*&lt;Room&gt;*)",
       "items": {
         "$ref": "Room.json"
       }
@@ -32,6 +68,7 @@
   },
   "required": [
     "users",
+    "invites",
     "rooms"
   ]
 }

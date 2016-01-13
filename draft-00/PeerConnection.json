@@ -1,14 +1,15 @@
 {
   "id": "PeerConnection",
   "$schema": "https://webcom-components.github.io/reach-schema/draft-00/PeerConnection.json",
+  "description": "The PeerConnection. (/_webrtc/**$user1DeviceId**-**$user2DeviceId**/**$peerCoId**/.",
+  "type": "object",
   "properties": {
-    "local": {
-      "description": "Local stream",
-      "$ref": "PeerConnectionPart.json"
+    "$user1DeviceId": {
+      "$ref": "PeerConnectionDevice.json"
     },
-    "remote": {
-      "description": "Remote stream",
-      "$ref": "PeerConnectionPart.json"
+    "$user2DeviceId": {
+      "$ref": "PeerConnectionDevice.json"
     }
-  }
+  },
+  "required": ["$user1DeviceId", "$user2DeviceId"]
 }

@@ -17,7 +17,7 @@
         "null"
       ]
     },
-    ".joined": {
+    "_joined": {
       "description": "Timestamp. Can be used to determine which *MODERATOR* becomes the new *OWNER*",
       "type": "number"
     }

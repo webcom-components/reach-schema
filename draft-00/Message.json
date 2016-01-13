@@ -1,0 +1,24 @@
+{
+  "id": "Message",
+  "$schema": "https://webcom-components.github.io/reach-schema/draft-00/Message.json",
+  "description": "Instant Message",
+  "properties": {
+    "text": {
+      "description": "The message content. (Add a length limit ?)",
+      "type": "string"
+    },
+    "from": {
+      "description": "The userId of the user writing the message",
+      "type": "string"
+    },
+    "_created": {
+      "description": "The message timestamp",
+      "type": "number"
+    }
+  },
+  "required": [
+    "from",
+    "text",
+    "_created"
+  ]
+}
