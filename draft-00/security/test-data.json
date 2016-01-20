@@ -1,0 +1,92 @@
+{
+  "root": {
+    "rooms" : {
+      "-K85HVr9Ke3yXovthoL7" : {
+        "meta" : {
+          "_created" : 1452878204505,
+          "name" : "room 1",
+          "owner" : "simplelogin:1",
+          "status" : "OPENED"
+        },
+        "participants" : {
+          "simplelogin:1" : {
+            "_joined" : 1452878204505,
+            "role" : "OWNER",
+            "status" : "CONNECTED"
+          },
+          "simplelogin:2" : {
+            "_joined" : 1452879445354,
+            "role" : "NONE",
+            "status" : "CONNECTED"
+          }
+        }
+      },
+      "-K85HuXI-iLao5YyBfOh" : {
+        "meta" : {
+          "_created" : 1452878309671,
+          "name" : "room 1",
+          "owner" : "simplelogin:1",
+          "status" : "OPENED"
+        },
+        "participants" : {
+          "simplelogin:1" : {
+            "_joined" : 1452878309671,
+            "role" : "OWNER",
+            "status" : "CONNECTED"
+          }
+        }
+      },
+      "-K85HuXmvsGtvqeT66oX" : {
+        "meta" : {
+          "_created" : 1452878309862,
+          "name" : "room 1",
+          "owner" : "simplelogin:1",
+          "status" : "OPENED"
+        },
+        "participants" : {
+          "simplelogin:1" : {
+            "_joined" : 1452878309862,
+            "role" : "OWNER",
+            "status" : "CONNECTED"
+          }
+        }
+      }
+    },
+    "users" : {
+      "simplelogin:1" : {
+        "devices" : {
+          "-K854i2NIEvjQkhHlBdQ" : {
+            "sdk_version" : "js_0.2.3",
+            "status" : "CONNECTED",
+            "userAgent" : "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.79 Safari/537.36"
+          }
+        },
+        "lastSeen" : 1452879266889,
+        "name" : "user1",
+        "status" : "CONNECTED"
+      },
+      "simplelogin:2" : {
+        "devices" : {
+          "-K851edlMJa1y3NUAKfm" : {
+            "sdk_version" : "js_undefined",
+            "status" : "CONNECTED",
+            "userAgent" : "Mozilla/5.0 (X11; Linux x86_64; rv:42.0) Gecko/20100101 Firefox/42.0"
+          },
+          "-K85LZn5J6sAz_izfD6Z" : {
+            "sdk_version" : "js_1.0.4",
+            "status" : "CONNECTED",
+            "userAgent" : "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.106 Safari/537.36"
+          }
+        },
+        "lastSeen" : 1453111249659,
+        "name" : "user2",
+        "status" : "CONNECTED"
+      }
+    }
+  },
+  "users": {
+    "user1": {"uid": "simplelogin:1"},
+    "user2": {"uid": "simplelogin:2"},
+    "user3": {"uid": "simplelogin:3"}
+  }
+}

@@ -6,3 +6,5 @@ AUTHORS
 LICENSE
 .*
 *.md
+**/tests.js
+.tools/index-generate.js

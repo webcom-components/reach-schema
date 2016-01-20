@@ -11,12 +11,17 @@ mkdir -p out/docson;
 
 # Copy docson files
 cp -R bower_components/docson/css bower_components/docson/lib bower_components/docson/templates bower_components/docson/docson.js bower_components/docson/index.html bower_components/docson/widget.js out/docson/
+# Generate all rules
+./node_modules/.bin/babel-node ./.tools/rules-generate.js
 # Copy drafts
 cp -R draft-* legacy out/
+# Remove rules templates & tests
+find out/ -type f -name "*.bolt" -exec rm -f {} \;
+find out/ -type f -name "test-*" -exec rm -f {} \;
 # Copy README & LICENSE
 cp README.md LICENSE out/
 # Generate index
-./node_modules/.bin/babel-node ./.tools/site.js >> out/index.html
+./node_modules/.bin/babel-node ./.tools/index-generate.js
 
 cd out
 git init

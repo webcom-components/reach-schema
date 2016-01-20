@@ -2,3 +2,6 @@ bower_components/
 node_modules/
 out/
 .idea/
+**/rules.json
+**/report/
+npm-debug.log

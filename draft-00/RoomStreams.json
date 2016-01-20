@@ -1,0 +1,9 @@
+{
+  "id": "RoomStreams",
+  "$schema": "https://webcom-components.github.io/reach-schema/draft-00/RoomStreams.json",
+  "description": "List of *&lt;Stream&gt;* for a *&lt;Room&gt;*. (/_streams/__$roomId__/__$streamId__/*&lt;Stream&gt;*)",
+  "type": "array",
+  "items": {
+    "$ref": "Stream.json"
+  }
+}
