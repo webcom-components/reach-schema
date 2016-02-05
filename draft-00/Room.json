@@ -2,48 +2,27 @@
   "id": "Room",
   "$schema": "https://webcom-components.github.io/reach-schema/draft-00/Room.json",
   "properties": {
-    "meta": {
-      "description": "The Room metadata.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "Display name of the room. If not unique, warn or increment ?",
-          "type": "string"
-        },
-        "owner": {
-          "description": "Name of the owner path in */users*",
-          "type": "string"
-        },
-        "status": {
-          "enum": [
-            "OPENED",
-            "CLOSED"
-          ]
-        },
-        "_created": {
-          "description": "The room creation timestamp",
-          "type": "number"
-        },
-        "_closed": {
-          "description": "The room close timestamp",
-          "type": "number"
-        }
-      }
+    "name": {
+      "description": "Display name of the room. If not unique, warn or increment ?",
+      "type": "string"
     },
-    "participants": {
-      "description": "List of the room participants",
-      "type": "array",
-      "items": {"$ref": "Participant.json"}
+    "owner": {
+      "description": "Name of the owner path in */users*",
+      "type": "string"
     },
-    "streams": {
-      "description": "List of the published streams",
-      "type": "array",
-      "items": {"$ref": "Stream.json"}
+    "status": {
+      "enum": [
+        "OPENED",
+        "CLOSED"
+      ]
     },
-    "messages": {
-      "description": "List of the instant messages",
-      "type": "array",
-      "items": {"$ref": "Message.json"}
+    "_created": {
+      "description": "The room creation timestamp",
+      "type": "number"
+    },
+    "_closed": {
+      "description": "The room close timestamp",
+      "type": "number"
     }
   },
   "required": [

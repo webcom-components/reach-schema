@@ -1,0 +1,20 @@
+{
+    "id": "Subscriber",
+    "$schema": "https://webcom-components.github.io/reach-schema/draft-00/Subscriber.json",
+    "description": "The subscriber's __$deviceId__ is used as the key to enable multi-device. (/_/rooms/**$roomId**/subscribers/**$streamId**/**$deviceId**/*&lt;Subscriber&gt;*)",
+    "properties": {
+        "to": {
+            "description": "The &lt;Subscriber&gt;'s user id",
+            "$ref": "UserId.json"
+        },
+        "pc": {
+            "description": "The PeerConnection id",
+            "$ref": "PeerCoId.json"
+        },
+        "_created": {
+            "description": "The subscription timestamp",
+            "type": "number"
+        }
+    },
+    "required": ["to", "pc"]
+}

@@ -1,9 +1,0 @@
-{
-  "id": "RoomParticipants",
-  "$schema": "https://webcom-components.github.io/reach-schema/draft-00/RoomParticipants.json",
-  "description": "List of *&lt;Participant&gt;* for a *&lt;Room&gt;*. (/_participants/__$roomId__/__$userId__/*&lt;Participant&gt;*)",
-  "type": "array",
-  "items": {
-    "$ref": "Participant.json"
-  }
-}

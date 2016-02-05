@@ -5,11 +5,11 @@
   "properties": {
     "from": {
       "description": "__$userId__ of the sender",
-      "type": "string"
+      "$ref": "UserId.json"
     },
-    "roomId": {
+    "room": {
       "description": "__$roomId__ of the *&lt;Room&gt;*",
-      "type": "string"
+      "$ref": "RoomId.json"
     },
     "status": {
       "enum": [

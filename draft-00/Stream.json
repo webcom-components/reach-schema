@@ -5,37 +5,15 @@
   "properties": {
     "from": {
       "description": "The __$userId__ of the participant publishing this stream",
-      "type": "string"
+      "$ref": "UserId.json"
     },
     "device": {
       "description": "The __$deviceId__ of the device used to publish this stream",
-      "type": "string"
+      "$ref": "DeviceId.json"
     },
     "type": {
+        "description": "The type of stream",
       "enum": ["audio", "video", "audio-video", "chat"]
-    },
-    "subscribers": {
-      "description": "List of participants subscribing to this stream",
-      "type": "array",
-      "items": {
-        "type": "object",
-        "description": "The subscriber's __$deviceId__ is used as the key to enable multi-device. (/rooms/__$roomId__/streams/__$streamId__/subscribers/__$deviceId__/)",
-        "properties": {
-          "to": {
-            "description": "The userId of the participant subscribing to this stream",
-            "type": "string"
-          },
-          "pc": {
-            "description": "The PeerConnection's id as defined in /_webrtc/__$publisherDeviceId__-__$subscriberDeviceId__/__$peerCoId__/",
-            "type": "string"
-          },
-          "_created": {
-            "description": "The subscription timestamp. Cna be used for expiration or timeout ?",
-            "type": "number"
-          }
-        }
-
-      }
     }
   },
   "required": [

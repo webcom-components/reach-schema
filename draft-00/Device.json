@@ -1,15 +1,23 @@
 {
   "id": "Device",
   "$schema": "https://webcom-components.github.io/reach-schema/draft-00/Device.json#",
-  "description": "A connected device. The device id is the path's name (/users/__$userId__/devices/__$deviceId__/*&lt;Device&gt;*",
+  "description": "A connected device. The device id is the path's name (/_/devices/**$userId**/**$deviceId**/*&lt;Device&gt;*",
   "properties": {
     "status": {
       "description": "The device's status. To be updated by the service.",
       "enum": ["CONNECTED", "DISCONNECTED", "SLEEPING", "null"]
     },
-    "sdk_version": {
-      "description": "Reach SDK used by the client. (ios_0.2.1, js_0.2.2, android_0.2.1, ...)",
-      "type": "string"
+    "sdk": {
+        "description": "SDK versions used by the client (ios_0.2.1, js_0.2.2, android_0.2.1, ...)",
+        "type": "object",
+        "properties": {
+            "reach": {
+                "type": "string"
+            },
+            "webcom": {
+                "type": "string"
+            }
+        }
     },
     "os": {
       "description": "Client OS version. Only with Native SDK.(ios_9, android_5.1, ...)",

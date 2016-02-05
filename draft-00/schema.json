@@ -1,74 +1,154 @@
 {
-  "id": "reach/draft-00",
-  "$schema": "https://webcom-components.github.io/reach-schema/draft-00/schema.json#",
-  "description": "The 'root' of the data model used by Reach.\n\n---\nBy default located at the root of your namespace (*/base/mynamespace/_reach/*) or on a specified path (i.e. */base/mynamespace/path/for/reach/*)",
-  "properties": {
-    "_iceServers": {
-      "description": "Configured ICE servers",
-      "type": "array",
-      "items": {
-        "$ref": "ICEServer.json"
-      }
-    },
-    "_webrtc": {
-      "description": "Peer connections (SDP exchange)",
-      "type": "array",
-      "items": {
-        "$ref": "PeerConnections.json"
-      }
-    },
-    "_history": {
-      "description": "Archived data.\n\n---\n- Should PeerConnections also be archived (legal purpose ?)\n- Should this be an option ?",
-      "type": "object",
-      "properties": {
-        "users": {
-          "description": "Archived users",
-          "type": "array",
-          "items": {
-            "$ref": "User.json"
-          }
+    "id": "reach/draft-00",
+    "$schema": "https://webcom-components.github.io/reach-schema/draft-00/schema.json#",
+    "description": "The 'root' of the data model used by Reach.\n\n---\nBy default located at the root of your namespace (*/base/mynamespace/_reach/*) or on a specified path (i.e. */base/mynamespace/path/for/reach/*)",
+    "properties": {
+        "_": {
+            "description": "Path for private & technical data",
+            "type": "object",
+            "properties": {
+                "ice": {
+                    "description": "Configured ICE servers",
+                    "type": "array",
+                    "items": {
+                        "$ref": "ICEServer.json"
+                    }
+                },
+                "devices": {
+                    "type": "array",
+                    "description": "List of *&lt;Device&gt;* sorted by &lt;User&gt;. Each &lt;User&gt; is identified by its __$userId__.",
+                    "items": {
+                        "description": "List of *&lt;Device&gt;* for a *&lt;User&gt;*. (/_/devices/**$userId**/**$deviceId**/*&lt;Device&gt;*)",
+                        "type": "array",
+                        "items": {
+                            "$ref": "Device.json"
+                        }
+                    }
+                },
+                "invites": {
+                    "type": "array",
+                    "description": "List of *&lt;Invitation&gt;* sorted by &lt;User&gt;. Each &lt;User&gt; is identified by its __$userId__.",
+                    "items": {
+                        "description": "List of *&lt;Invitation&gt;* for a *&lt;User&gt;*. (/_/invites/**$userId**/**$invitationId**/*&lt;Invitation&gt;*)",
+                        "type": "array",
+                        "items": {
+                          "$ref": "Invitation.json"
+                        }
+                    }
+                },
+                "rooms": {
+                    "type": "array",
+                    "description": "List of room private infos sorted by &lt;Room&gt;. Each &lt;Room&gt; is identified by its __$roomId__.",
+                    "items": {
+                        "type": "object",
+                        "description": "A &lt;Room&gt; private data (i.e. reserved to participants)",
+                        "properties": {
+                            "participants": {
+                                "type": "array",
+                                "description": "List of *&lt;Participant&gt;* for a &lt;Room&gt;. (/_/rooms/**$roomId**/participants/**$userId**/*&lt;Participant&gt;*)",
+                                "items": {
+                                    "$ref": "Participant.json"
+                                }
+                            },
+                            "messages": {
+                                "type": "array",
+                                "description": "List of *&lt;Message&gt;* for a &lt;Room&gt;. (/_/rooms/**$roomId**/messages/**$msgId**/*&lt;Message&gt;*)",
+                                "items": {
+                                    "$ref": "Message.json"
+                                }
+                            },
+                            "streams": {
+                                "type": "array",
+                                "description": "List of published *&lt;Stream&gt;* for a &lt;Room&gt;. (/_/rooms/**$roomId**/streams/**$streamId**/*&lt;Stream&gt;*)",
+                                "items": {
+                                    "$ref": "Stream.json"
+                                }
+                            },
+                            "subscribers": {
+                                "type": "array",
+                                "description": "List of stream *&lt;Subscriber&gt;* for a &lt;Room&gt;. (/_/rooms/**$roomId**/subscribers/**$streamId**/*&lt;Subscriber&gt;*)",
+                                "items": {
+                                    "$ref": "Subscriber.json"
+                                }
+                            }
+                        }
+                    }
+                },
+                "webrtc": {
+                    "description": "List of PeerConnections.",
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "description": "List connections between two devices. (/_/webrtc/**$peer1_deviceId**-**$peer2_deviceId**)",
+                        "properties": {
+                            "peers": {
+                                "type": "array",
+                                "description": "List of the devices owners ids (for security purposes.)",
+                                "items": {
+                                    "$ref": "UserId.json"
+                                }
+                            },
+                            "connections": {
+                                "type": "array",
+                                "description": "List of actual PeerConnections between the two devices.\n\n---\nEach connection is identified by its **$PeerCoId** (/_/webrtc/**$peer1_deviceId**-**$peer2_deviceId**/connections/**$peerCoId**/*&lt;PeerConnection&gt;*)",
+                                "items": {
+                                    "$ref": "PeerConnection.json"
+                                }
+                            }
+                        }
+                    }
+                },
+                "history": {
+                    "description": "Archived data.\n\n---\n- Should PeerConnections also be archived (legal purpose ?)\n- Should this be an option ?",
+                    "type": "object",
+                    "properties": {
+                        "users": {
+                            "description": "Archived users",
+                            "type": "array",
+                            "items": {
+                                "$ref": "User.json"
+                            }
+                        },
+                        "invites": {
+                            "type": "array",
+                            "description": "List of archived *&lt;Invitation&gt;* sorted by &lt;User&gt;. Each &lt;User&gt; is identified by its __$userId__.",
+                            "items": {
+                                "description": "List of *&lt;Invitation&gt;* for a *&lt;User&gt;*. (/_/history/invites/**$userId**/**$invitationId**/*&lt;Invitation&gt;*)",
+                                "type": "array",
+                                "items": {
+                                  "$ref": "Invitation.json"
+                                }
+                            }
+                        },
+                        "rooms": {
+                            "description": "Archived rooms",
+                            "type": "array",
+                            "items": {
+                                "$ref": "Room.json"
+                            }
+                        }
+                    }
+                }
+            }
         },
-        "invites": {
-          "description": "Archived invites",
-          "type": "array",
-          "items": {
-            "$ref": "UserInvitations.json"
-          }
+        "users": {
+            "type": "array",
+            "description": "List of *&lt;User&gt;* identified by their **$userId** (/users/**$userId**/*&lt;User&gt;*)",
+            "items": {
+                "$ref": "User.json"
+            }
         },
         "rooms": {
-          "description": "Archived rooms",
-          "type": "array",
-          "items": {
-            "$ref": "Room.json"
-          }
+            "type": "array",
+            "description": "List of *&lt;Room&gt;* identified by their **$roomId** (/rooms/**$roomId**/*&lt;Room&gt;*)",
+            "items": {
+                "$ref": "Room.json"
+            }
         }
-      }
     },
-    "users": {
-      "type": "array",
-      "description": "List of *&lt;User&gt;* identified by their __$userId__ (/users/__$userId__/*&lt;User&gt;*)",
-      "items": {
-        "$ref": "User.json"
-      }
-    },
-    "invites": {
-      "type": "array",
-      "description": "List of *&lt;Invitation&gt;* sorted by &lt;User&gt;. Each &lt;User&gt; is identified by its __$userId__.",
-      "items": {
-        "$ref": "UserInvitations.json"
-      }
-    },
-    "rooms": {
-      "type": "array",
-      "description": "List of *&lt;Room&gt;* identified by their __$roomId__ (/rooms/__$roomId__/*&lt;Room&gt;*)",
-      "items": {
-        "$ref": "Room.json"
-      }
-    }
-  },
-  "required": [
-    "users",
-    "invites",
-    "rooms"
-  ]
+    "required": [
+        "users",
+        "invites",
+        "rooms"
+    ]
 }
