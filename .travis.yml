@@ -5,7 +5,7 @@ before_script:
   - npm install -g bower
   - bower install
 script:
-  - npm run rules && npm run test -- --log
+  - npm run rules && npm run test
 after_success:
   - bash ./.tools/deploy-gh-pages.sh
 env:
