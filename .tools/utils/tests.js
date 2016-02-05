@@ -155,14 +155,27 @@ const logout = (path = '') => new Promise(
 export const initNamespace = (rules, nbUser = 5) => done => {
 	console.info(`\n  \u2622 ${ns}\n`);
 	auth(admin_jwt, 'accounts')
-		.then(() => createNamespace(admin_jwt, ns))
-		.then(() => adminToken(admin_jwt, ns))
-		.then((token) => putRules(token, rules))
 		.then(() => {
+			console.warn('auth success');
+			return createNamespace(admin_jwt, ns)
+		})
+		.then(() => {
+			console.warn(`namespace ${ns} created`);
+			return adminToken(admin_jwt, ns)
+		})
+		.then((token) => {
+			console.warn(`admin token for namespace ${ns} ok`);
+			return putRules(token, rules);
+		})
+		.then(() => {
+			console.warn(`rules set for namespace ${ns}`);
 			const users = range(1, nbUser + 1).map(id => createUser(ns, `user${id}@reach.io`));
 			return Promise.all(users);
 		})
-		.then(() => done())
+		.then(() => {
+			console.warn(`users created for namespace ${ns}`);
+			done()
+		})
 		.catch(done);
 };
 

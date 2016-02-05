@@ -5,7 +5,7 @@
   "scripts": {
     "schema": "./node_modules/.bin/browser-sync start --server --files \"./$VERSION/*.json\" --startPath bower_components/docson/#/../../$VERSION/schema.json",
     "rules": "./node_modules/.bin/firebase-bolt < ./$VERSION/security/rules.bolt > ./$VERSION/security/rules.json",
-    "test": "./node_modules/.bin/mocha --compilers js:babel-register --reporter mochawesome --reporter-options reportDir=./$VERSION/security/report,reportName=index,reportTitle='Security Rules Tests',inlineAssets=true ./$VERSION/security/test-specs.js",
+    "test": "./node_modules/.bin/mocha --compilers js:babel-register --timeout 5000 --reporter mochawesome --reporter-options reportDir=./$VERSION/security/report,reportName=index,reportTitle='Security Rules Tests',inlineAssets=true ./$VERSION/security/test-specs.js",
     "jwt": "./node_modules/.bin/babel-node .tools/token.js"
   },
   "repository": {
