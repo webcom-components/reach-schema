@@ -215,7 +215,7 @@ path /_/invites/{userId}/{invitationId} is Invitation {
         isAuthenticated() &&
         (
             isUser(userId) ||
-            (prior(this) == null && isUser(this.from) && (isOwner(this.room) || root._.rooms[this.room].participants[auth.uid].role == 'MODERATOR'))) ||
+            (prior(this) == null && isUser(this.from) && (isOwner(this.room) || root._.rooms[this.room].participants[auth.uid].role == 'MODERATOR')) ||
             (isUser(prior(this.from)))
         )
     }
