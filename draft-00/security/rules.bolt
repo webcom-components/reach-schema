@@ -1,249 +1,265 @@
-/*********************************************
- * Functions definitions
- *********************************************/
+/**************************************
+* Global definitions
+**************************************/
 
-hasRole(participants) { participants[auth.uid].role != null }
-roleIs(participants, userRole) { participants[auth.uid].role == userRole }
+type Extra extends Object {
+    extra: Null | Any
+}
 
 isAuthenticated() { (auth != null) }
-isUser(uid) { (auth != null && auth.uid == uid) }
-isParticipant(participants) { (auth != null && participants[auth.uid] != null) }
-isParticipantWithRole(participants) { (isParticipant(participants) && hasRole(participants)) }
-isOwner(participants) { (isParticipantWithRole(participants) && roleIs(participants, 'OWNER')) }
-isModerator(participants) { (isParticipantWithRole(participants) && roleIs(participants, 'MODERATOR')) }
+isUser(uid) { (auth.uid == uid) }
+isParticipant(roomId) { root._.rooms[roomId] != null && root._.rooms[roomId].participants != null && root._.rooms[roomId].participants[auth.uid] != null && root._rooms[roomId].participants[auth.uid]._joined != null }
+isModerator(roomId) { isParticipant(roomId) && root._rooms[roomId].participants[auth.uid].role == 'MODERATOR'}
+isOwner(roomId) { root.rooms[roomId] != null && root.rooms[roomId].owner == auth.uid }
 
-/*********************************************
- * Type definitions
- *********************************************/
 
-/*+++++++++++++++++++++++++++
- * ICE servers
- *++++++++++++++++++++++++++*/
-type ICEServer {
-  url: String
-  user: String | Null
-  pwd: String | Null
+/**************************************
+* Users
+**************************************/
+
+type User extends Extra {
+    name: Null | String
+    status: Null | String
+    lastSeen: Null | Number
 }
 
-/*+++++++++++++++++++++++++++
- * User
- *++++++++++++++++++++++++++*/
-type User {
-  name: String
-  status: String
-  lastSeen: Number
-  devices: Device[]
-}
-
-/*+++++++++++++++++++++++++++
- * Device
- *++++++++++++++++++++++++++*/
 type Device {
-  status: DeviceStatus
-  sdk_version: SdkVersion
-  os: String | Null
-  userAgent: String | Null
+    status: DeviceStatus
+    sdk_version: Null | String
+    os: Null | String
+    userAgent: Null | String
 }
+
 type DeviceStatus extends String {
-  validate() { this == 'CONNECTED' || this == 'DISCONNECTED' || this == 'SLEEPING' }
-}
-type SdkVersion extends String {
-  //validate() { this.test(/^((js)|(android)|(ios))_(\d+\.\d+\.\d+)$/) }
+    validate() { this == 'CONNECTED' || this == 'DISCONNECTED' || this == 'SLEEPING' }
 }
 
-/*+++++++++++++++++++++++++++
- * Room
- *++++++++++++++++++++++++++*/
-type Room {
-  name: String
-  owner: String
-  status: String
-  _created: Number
-  _closed: Number | Null
-}
-
-type RoomData {
-
-}
-
-/*+++++++++++++++++++++++++++
- * Participant
- *++++++++++++++++++++++++++*/
-type Participant {
-  status: String | Null
-  role: Role
-  invitation: String | Null
-  _joined: Number | Null
-}
-type Role extends String {
-  validate() { this == 'OWNER' || this == 'MODERATOR' || this == 'NONE' }
-}
-
-/*+++++++++++++++++++++++++++
- * Stream
- *++++++++++++++++++++++++++*/
-type Stream {
-  from: String
-  device: String
-  type: StreamType
-  subscribers: Subscriber[] | Null
-}
-type StreamType extends String {
-  validate() { this == 'audio' || this == 'video' || this == 'audio-video' || this == 'chat' }
-}
-type Subscriber {
-  to: String
-  pc: String
-  _created: Number
-}
-
-/*+++++++++++++++++++++++++++
- * Message
- *++++++++++++++++++++++++++*/
-type Message {
-  from: String
-  text: String
-  _created: Number
-  _end: Null | Number
-}
-
-/*+++++++++++++++++++++++++++
- * Invitation
- *++++++++++++++++++++++++++*/
-type Invitation {
-  from: String
-  roomId: String
-  status: InvitationStatus
-  topic: Null | String
-  _created: Number
-  _end: Number | Null
-}
-type InvitationStatus extends String {
-  validate() { this == 'ONGOING' || this == 'ACCEPTED' || this == 'REJECTED' || this == 'CANCELED' }
-}
-
-/*+++++++++++++++++++++++++++
- * PeerConnection
- *++++++++++++++++++++++++++*/
-type PeerConnection {
-  peer1: String,
-  peer1DeviceId: PeerConnectionDevice,
-  peer2: String,
-  peer2DeviceId: PeerConnectionDevice
-}
-
-type PeerConnectionDevice {
-  answer: String | Null
-  offer: String | Null
-  medias: String[] | Null
-  ice: ICECandidate[]
-  validate() { this.answer != null || this.offer != null }
-}
-
-type ICECandidate {
-  candidate: String
-  sdpMid: String
-  sdpMLineIndex: Number
-}
-
-/*********************************************
- * Access rules
- *********************************************/
-
-/*+++++++++++++++++++++++++++
- * ICE servers
- *++++++++++++++++++++++++++*/
-
-// Everybody can see the ice servers
-path /_iceServers is ICEServer[] {
-  read() { true }
-}
-
-
-/*+++++++++++++++++++++++++++
- * Users
- *++++++++++++++++++++++++++*/
-
-// Only authenticated users can the the Users list
+// Only authenticated users can read the Users list
 path /users {
-  read() { isAuthenticated() }
+    read() { isAuthenticated() }
 }
 
 // Only the user can modify its data
 path /users/{userId} is User {
-  write() { isUser(key()) }
+    write() { isAuthenticated() && isUser(userId) }
 }
 
+// Only the user can see/modify its devices
+path /_/devices/{userId} is Device[] {
+    read() { isUser(userId) }
+    write() { isUser(userId) }
+}
 
-/*+++++++++++++++++++++++++++
- * Rooms
- *++++++++++++++++++++++++++*/
+/**************************************
+* Rooms
+**************************************/
 
-// Only authenticated users can the the Rooms list
+type Room extends Extra {
+    name: Null | String
+    owner: Null | String
+    status: Null | String
+    _created: Null | Number
+    _closed: Null | Number
+}
+
+// Only authenticated users can read the Rooms list
 path /rooms {
-  read() { isAuthenticated() }
+    read() { isAuthenticated() }
 }
-
-// Only owner & moderators can modify the room
+// Only owner can modify the room
 path /rooms/{roomId} is Room {
-  write() { isParticipantWithRole(this.participants) }
+    write() { isAuthenticated() && (prior(this) == null || prior(this).owner == auth.uid ) }
+}
+// Only participants can read the private room data
+path /_/rooms/{roomId} {
+    read() { isAuthenticated() && this.participants[auth.uid] != null }
+}
+/**************************************
+* Participants
+**************************************/
+
+type Participant extends Extra {
+    status: Null | String
+    role: Null | Role
+    _joined: Null | Number
 }
 
-path /_rooms/{roomId} is RoomData {
-  read() { isParticipant(this.participants) }
+type Role extends String {
+    validate() { this == 'OWNER' || this == 'MODERATOR' || this == 'NONE' }
 }
 
-// Only the concerned participant, the owner and the moderators can see modify a participant
-path /_rooms/{roomId}/participants/{userId} is Participant {
-  write() { isParticipantWithRole(ref.parent()) || isUser(key())}
-}
-/*path /_rooms/{roomId}/participants/{userId}/status {
-  write() { isUser(userId)}
-}
-path /_rooms/{roomId}/participants/{userId}/_joined {
-  write() { isUser(userId)}
-}*/
-// Only participants can see the streams list
-path /_rooms/{roomId}/streams {
-  read() { isParticipant(ref.parent().participants) }
-}
-
-// Only the stream publisher, the owner and the moderators can see modify a stream
-path /_rooms/{roomId}/streams/{streamId} is Stream {
-  write() { isUser(this.from) || isParticipantWithRole(ref.parent().parent().participants) }
-}
-
-// Participants can subscribe to a stream
-path /_rooms/{roomId}/streams/{streamId}/subscribers {
-  write() { isParticipant(ref.parent().parent().parent().participants) }
+// The Owner can write in the participants list of his room
+// The Moderator can write anywhere in the participants list but not elevate his role
+// The participant can only write his data but not elevate his role
+path /_/rooms/{roomId}/participants/{userId} is Participant {
+    write() {
+        isAuthenticated() && (
+            isOwner(roomId) ||
+            (
+                prior(this).parent()[auth.uid] != null &&
+                prior(this).parent()[auth.uid].role == 'MODERATOR' &&
+                (this == null || this.role == 'MODERATOR' || this.role == 'NONE')
+            ) ||
+            (
+                isUser(userId) &&
+                prior(this) != null &&
+                (this.role == null || this.role == 'NONE')
+            )
+        )
+    }
 }
 
-// Only participants can see/write the messages list
-path /_rooms/{roomId}/messages is Message[] {
-  read() { isParticipant(this.parent().participants) }
-  write() { isParticipant(this.parent().participants) }
+/**************************************
+* Messages
+**************************************/
+
+type Message {
+    from: String
+    text: String
+    _created: Number
+    _end: Null | Number
+}
+
+path /_/rooms/{roomId}/messages/{msgId} is Message {
+    write() {
+        isAuthenticated() &&
+        (
+            isOwner(roomId) ||
+            (
+                prior(this).parent().parent().participants[auth.uid] != null &&
+                (
+                    prior(this).parent().parent().participants[auth.uid].role == 'MODERATOR' ||
+                    prior(this) == null ||
+                    isUser(prior(this).from)
+                )
+            )
+        )
+    }
+}
+
+/**************************************
+* Streams
+**************************************/
+
+type StreamData {
+    from: Null | String
+    device: Null | String
+    type: Null | StreamType
+}
+
+type StreamType extends String {
+    validate() { this == 'audio' || this == 'video' || this == 'audio-video' || this == 'chat' }
+}
+
+type Subscriber {
+    to: Null | String
+    pc: Null | String
+    _created: Null | Number
+}
+
+path /_/rooms/{roomId}/streams/{streamId} is StreamData {
+    write() {
+        isAuthenticated() &&
+        (
+            isOwner(roomId) ||
+            (
+                prior(this).parent().parent().participants[auth.uid] != null &&
+                (
+                    prior(this).parent().parent().participants[auth.uid].role == 'MODERATOR' ||
+                    prior(this) == null ||
+                    isUser(prior(this.from))
+                )
+            )
+        )
+    }
+}
+
+path /_/rooms/{roomId}/subscribers/{streamId} is Subscriber[] {
+    write() {
+        isAuthenticated() &&
+        (
+            isOwner(roomId) ||
+            (
+                prior(this).parent().parent().participants[auth.uid] != null &&
+                (
+                    prior(this).parent().parent().participants[auth.uid].role == 'MODERATOR' ||
+                    prior(this).parent().parent().streams[streamId].from == auth.uid ||
+                    prior(this[key()]) == null ||
+                    isUser(prior(this[key()].to))
+                )
+            )
+        )
+    }
+}
+
+/**************************************
+* Invitations
+**************************************/
+
+type Invitation {
+    from: Null | String
+    room: Null | String
+    status: Null | InvitationStatus
+    topic: Null | String
+    _created: Null | Number
+    _end: Null | Number
+}
+
+type InvitationStatus extends String {
+    validate() { this == 'ONGOING' || this == 'ACCEPTED' || this == 'REJECTED' || this == 'CANCELED' }
+}
+
+path /_/invites/{userId}/{invitationId} is Invitation {
+    read() { isAuthenticated() && (isUser(userId) || isUser(this.from)) }
+    write() {
+        isAuthenticated() &&
+        (
+            isUser(userId) ||
+            (prior(this) == null && isUser(this.from) && (isOwner(this.room) || root._.rooms[this.room].participants[auth.uid].role == 'MODERATOR'))) ||
+            (isUser(prior(this.from)))
+        )
+    }
 }
 
 
-/*+++++++++++++++++++++++++++
- * Invitations
- *++++++++++++++++++++++++++*/
-
-path /invites/{userId} {
-  read() { isUser(userId) }
-  write() { isUser(userId) }
-}
-path /invites/{userId}/{invitationId} is Invitation {
-  read() { isUser(userId) || isUser(this.from) }
-  write() { isUser(userId) || isUser(this.from) }
+/**************************************
+* WebRTC
+**************************************/
+type PeerConnections {
+    peers: String[]
 }
 
+type PeerConnectionDevice {
+    answer: Null | String
+    offer: Null | String
+    medias: Null | String[]
+    ice: ICECandidate[]
+    validate() { this.answer != null || this.offer != null }
+}
 
-/*+++++++++++++++++++++++++++
- * WebRTC
- *++++++++++++++++++++++++++*/
+type ICECandidate {
+    candidate: String
+    sdpMid: String
+    sdpMLineIndex: Number
+}
 
-path /_webrtc/{pubsubId}/{peerCoId} is PeerConnection {
-  read() { isUser(this.peer1) || isUser(this.peer2) }
-  write() { isUser(this.peer1) || isUser(this.peer2) }
+path /_/webrtc/{deviceIds} is PeerConnections {
+    read() { isAuthenticated() && this.peers[auth.uid] != null }
+    write() { isAuthenticated() && ((prior(this) == null && this.peers[auth.uid] != null) || (prior(this.peers[auth.uid]) != null)) }
+}
+path /_/webrtc/{deviceIds}/connections/{peerCoId}/{deviceId} is PeerConnectionDevice;
+
+/**************************************
+* ICE servers
+**************************************/
+
+type ICEServer {
+    url: String
+    user: Null | String
+    pwd: Null | String
+}
+
+// Everybody can see the ice servers
+path /_/ice is ICEServer[] {
+    read() { true }
 }

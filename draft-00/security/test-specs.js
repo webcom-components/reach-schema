@@ -1,97 +1,396 @@
-/* global describe, before, it, xit*/
+/* global beforeEach*/
 
-const chai = require('chai');
-const expect = chai.expect;
-const targaryen = require('targaryen');
-const anonymous = targaryen.users.unauthenticated;
-const authenticated = targaryen.users.password;
+/*eslint max-len: [2, 200] */
 
-chai.use(targaryen.chai);
+import chai from 'chai';
+import {plugin, initNamespace, resetNamespace, destroyNamespace, users} from '../../.tools/utils/tests';
+import data from './test-data.json';
+import rules from './rules.json';
 
-const userData = (name, status, lastSeen) => {
-	return {name: name || 'user1', status: status || 'CONNECTED', lastSeen: lastSeen || Date.now()};
-};
-const roomData = (u, s, n, c) => {
+chai.use(plugin);
+
+const userData = (n, status = 'CONNECTED', lastSeen = Date.now()) => {
 	return {
-		meta: {
-			name: n || 'testRoom',
-			owner: u || 'simplelogin:1',
-			status: s || 'OPENED',
-			_created: c || Date.now()
-		},
-		participants: {
-			'simplelogin:1': {
-				status: 'CONNECTED',
-				role: 'OWNER'
-			}
-		}
+		name: users.password(n).email,
+		status,
+		lastSeen
+	};
+};
+const participantData = (role = 'NONE', status = 'CONNECTED', _joined = Date.now()) => {
+	return {
+		status,
+		role,
+		_joined
+	};
+};
+const roomData = (owner, status = 'OPENED', name = 'testRoom', _created = Date.now()) => {
+	return {
+		name,
+		owner: users.password(owner).uid,
+		status,
+		_created
 	};
 };
 
-describe('Security rules test for \'DRAFT-00\':', () => {
-	before(() => {
-		targaryen.setFirebaseData(require('./test-data.json'));
-		targaryen.setFirebaseRules(require('./rules.json'));
-	});
-	describe('/', () => {
-		it('Unauthenticated users cannot read anything under root', () => expect(anonymous).cannot.read.path('/'));
-		it('Unauthenticated users cannot write to root', () => expect(anonymous).cannot.write.to.path('/'));
-		it('Authenticated users cannot read anything under root', () => expect(authenticated).cannot.read.path('/'));
-		it('Authenticated users cannot write to root', () => expect(authenticated).cannot.write.to.path('/'));
-	});
-	describe('/users', () => {
-		it('Unauthenticated users cannot read anything under /users', () => {
-			expect(anonymous).cannot.read.path('users');
-			expect(anonymous).cannot.read.path('users/simplelogin:1/name');
+describe('DRAFT-00', function() {// eslint-disable-line
+	// Don't change this to arrow function as it will mess with the Mocha context (https://mochajs.org/#arrow-functions)
+	this.slow(100);
+
+	// Sets rules & creates users
+	before(initNamespace(rules));
+
+	// Reset namespace data
+	beforeEach(resetNamespace(data));
+
+	describe('<root>', () => {
+		// Root access
+		it('Anonymous users cannot read root', done => {
+			chai.expect(users.unauthenticated).cannot.read.path('/', done);
 		});
-		it('Unauthenticated users cannot register (i.e. add itself to the list)', () => {
-			expect(anonymous).cannot.write(userData('user3')).to.path('users/simplelogin:3');
+		it('Authenticated users cannot read root', done => {
+			chai.expect(users.password()).cannot.read.path('/', done);
 		});
-		it('Authenticated users can read everything under /users', () => {
-			expect(authenticated).can.read.path('users');
-			expect(authenticated).can.read.path('users/simplelogin:1/name');
+		it('Anonymous users cannot write anything to root', done => {
+			chai.expect(users.unauthenticated).cannot.set({test: 'test'}).path('/test', done);
 		});
-		it('Authenticated users can register (i.e. add itself to the list)', () => {
-			expect({uid: 'simplelogin:3'}).can.write(userData('user3')).to.path('users/simplelogin:3');
-		});
-		xit('Authenticated users can update status (i.e. add itself to the list)', () => {
-			// TODO Should work but doesn't with targaryen (maybe a bug) since it applies the User schema to the update
-			expect({uid: 'simplelogin:3'}).can.write('SLEEPING').to.path('users/simplelogin:3/status');
-		});
-		it('Authenticated users cannot write another user\'s data', () => {
-			expect({uid: 'simplelogin:2'}).cannot.write(userData()).to.path('users/simplelogin:1');
+		it('Authenticated users cannot write anything to root', done => {
+			chai.expect(users.password()).cannot.set({test: 'test'}).path('/test', done);
 		});
 	});
-	describe('/rooms', () => {
-		it('Unauthenticated users cannot read list rooms & read metadata', () => {
-			expect(anonymous).cannot.read.path('rooms');
-			expect(anonymous).cannot.read.path('rooms/-K85HVr9Ke3yXovthoL7/meta');
+
+	describe('users', () => {
+		// List users
+		it('Anonymous users cannot list users', done => {
+			chai.expect(users.unauthenticated).cannot.read.path('/users', done);
 		});
-		it('Unauthenticated users cannot create a room',
-			() => expect(anonymous).cannot.write(roomData()).path('rooms/-testRoomId')
-		);
-		it('Authenticated users can list rooms & read metadata', () => {
-			expect(authenticated).can.read.path('rooms');
-			expect(authenticated).can.read.path('rooms/-K85HVr9Ke3yXovthoL7/meta');
+		it('Authenticated users can list users', done => {
+			chai.expect(users.password()).can.read.path('/users', done);
 		});
-		xit('Authenticated users cannot read participants & streams unless he is a participant of the room', () => {
-			//expect({uid: 'simplelogin:2'}).can.read.path('rooms/-K85HVr9Ke3yXovthoL7/participants');
-			expect({uid: 'simplelogin:3'}).cannot.read.path('rooms/-K85HVr9Ke3yXovthoL7/participants');
+
+		// Register
+		it('Anonymous users cannot register', done => {
+			chai.expect(users.unauthenticated).cannot.set(userData()).to.path('/users/toto', done);
+		});
+		it('Authenticated users can register', done => {
+			chai.expect(users.password()).can.set(userData()).to.path(`/users/${users.password().uid}`, done);
+		});
+
+		// Update user info
+		it('Authenticated users cannot write another user\'s data', done => {
+			chai.expect(users.password(1)).cannot.set(userData(1)).to.path(`/users/${users.password(2).uid}`, done);
+		});
+		it('Authenticated users can update status', done => {
+			chai.expect(users.password()).can.set('SLEEPING').to.path(`/users/${users.password().uid}/status`, done);
 		});
 	});
-	describe('/invites', () => {
-		it('Unauthenticated users cannot read /invites',
-			() => expect(anonymous).cannot.read.path('invites')
-		);
+
+	describe('rooms', () => {
+		// List rooms
+		it('Anonymous users cannot list rooms', done => {
+			chai.expect(users.unauthenticated).cannot.read.path('rooms', done);
+		});
+		it('Anonymous users cannot read a room metadata', done => {
+			chai.expect(users.unauthenticated).cannot.read.path(`rooms/-room_1/status`, done);
+		});
+		it('Authenticated users can list rooms', done => {
+			chai.expect(users.password()).can.read.path('rooms', done);
+		});
+
+		// Read room data
+		it('Anonymous users cannot create a room', done => {
+			chai.expect(users.unauthenticated).cannot.push(roomData()).path('rooms', done);
+		});
+		it('Authenticated users can read a room metadata', done => {
+			chai.expect(users.password()).can.read.path(`rooms/-room_1/status`, done);
+		});
+
+		// Create room
+		it('Anonymous users cannot create a room', done => {
+			chai.expect(users.unauthenticated).cannot.push(roomData()).path('rooms', done);
+		});
+		it('Authenticated users can create a room', done => {
+			chai.expect(users.password()).can.push(roomData()).path('rooms', done);
+		});
+
+
+		// Update room
+		it('Anonymous users cannot modify a room', done => {
+			chai.expect(users.unauthenticated).cannot.set('CLOSED').path('rooms/-room_1/status', done);
+		});
+		it('Authenticated users cannot modify a room if they are not the owner', done => {
+			chai.expect(users.password(2)).cannot.set('CLOSED').path('rooms/-room_1/status', done);
+		});
+		it('The owner can modify a room', done => {
+			chai.expect(users.password(1)).can.set('CLOSED').path('rooms/-room_1/status', done);
+		});
 	});
-	describe('/_webrtc', () => {
-		it('Unauthenticated users cannot read /_webrtc',
-			() => expect(anonymous).cannot.read.path('_webrtc')
-		);
+
+	describe('invites', () => {
+		// List invites
+		it('Anonymous users cannot read /invites', done => {
+			chai.expect(users.unauthenticated).cannot.read.path('/_/invites', done);
+		});
+		it('A user can list his invites', done => {
+			chai.expect(users.password(2)).can.read.path('/_/invites/simplelogin:2', done);
+		});
+		it('A user cannot list another user invites', done => {
+			chai.expect(users.password(3)).cannot.read.path('/_/invites/simplelogin:2', done);
+		});
+
+		// Read invite
+		it('A user can read an invite he sent', done => {
+			chai.expect(users.password(3)).can.read.path('/_/invites/simplelogin:2/-invite-3', done);
+		});
+		it('A user cannot read an invite he did not send', done => {
+			chai.expect(users.password(1)).cannot.read.path('/_/invites/simplelogin:2/-invite-3', done);
+		});
+
+		// Update invite
+		it('A user can change the status of an invite he sent', done => {
+			chai.expect(users.password(3)).can.set('CANCELED').path('/_/invites/simplelogin:2/-invite-3/status', done);
+		});
+		it('A user cannot change the status of an invite he did not send', done => {
+			chai.expect(users.password(1)).cannot.set('CANCELED').path('/_/invites/simplelogin:2/-invite-3/status', done);
+		});
+		it('A user cannot make an invite his own', done => {
+			chai.expect(users.password(1)).cannot.set(users.password(1).uid).path('/_/invites/simplelogin:2/-invite-3/from', done);
+		});
 	});
-	describe('/_iceServers', () => {
-		it('Unauthenticated users can read /_iceServers',
-			() => expect(anonymous).can.read.path('_iceServers')
-		);
+
+	describe('_/rooms', () => {
+		// List rooms
+		it('Anonymous users cannot list _rooms', done => {
+			chai.expect(users.unauthenticated).cannot.read.path('_/rooms', done);
+		});
+		it('Authenticated users cannot read _rooms', done => {
+			chai.expect(users.password()).cannot.read.path('_/rooms', done);
+		});
+
+		// Read room private data
+		it('Anonymous users cannot read a room private data', done => {
+			chai.expect(users.unauthenticated).cannot.read.path('_/rooms/-room_1', done);
+		});
+		it('Authenticated users cannot read a room private data', done => {
+			chai.expect(users.password()).cannot.read.path('_/rooms/-room_1', done);
+		});
 	});
+
+	describe('_/rooms/{roomId}/participants', () => {
+		// List participants
+		it('Anonymous users cannot list the participants of a room', done => {
+			chai.expect(users.unauthenticated).cannot.read.path(`_/rooms/-room_1/participants`, done);
+		});
+		it('Authenticated users cannot list the participants of a room if they are not a participant', done => {
+			chai.expect(users.password()).cannot.read.path(`_/rooms/-room_1/participants`, done);
+		});
+		it('Participants users can list the participants of a room', done => {
+			chai.expect(users.password(1)).can.read.path(`_/rooms/-room_1/participants`, done);
+		});
+
+		// Read participant infos
+		it('Anonymous users cannot read a participant\'s data', done => {
+			chai.expect(users.unauthenticated).cannot.read.path(`_/rooms/-room_1/participants/${users.password(1).uid}`, done);
+		});
+		it('Authenticated users cannot read a participant\'s data if they are not a participant', done => {
+			chai.expect(users.password()).cannot.read.path(`_/rooms/-room_1/participants/${users.password(1).uid}`, done);
+		});
+		it('Participants users can read a participant\'s data', done => {
+			chai.expect(users.password(2)).can.read.path(`_/rooms/-room_1/participants/${users.password(1).uid}`, done);
+		});
+
+		// Add participant
+		it('Owner can add a new participant', done => {
+			chai.expect(users.password(2)).can.update(participantData()).path(`_/rooms/-room_3/participants/${users.password(4).uid}`, done);
+		});
+		it('Moderator can add a new participant', done => {
+			chai.expect(users.password(1)).can.update(participantData()).path(`_/rooms/-room_3/participants/${users.password(5).uid}`, done);
+		});
+
+		// Udpate participant infos (join, role)
+		it('Participant can change its status', done => {
+			chai.expect(users.password(3)).can.set('SLEEPING').path(`_/rooms/-room_3/participants/${users.password(3).uid}/status`, done);
+		});
+		it('Participant can not change his role to MODERATOR', done => {
+			chai.expect(users.password(3)).cannot.set('MODERATOR').path(`_/rooms/-room_3/participants/${users.password(3).uid}/role`, done);
+		});
+		it('Moderator can promote another participant to MODERATOR', done => {
+			chai.expect(users.password(1)).can.set('MODERATOR').path(`_/rooms/-room_3/participants/${users.password(3).uid}/role`, done);
+		});
+		it('Moderator can change its role to simple participant', done => {
+			chai.expect(users.password(1)).can.set('NONE').path(`_/rooms/-room_3/participants/${users.password(1).uid}/role`, done);
+		});
+
+		// Remove participant
+		it('Participant can remove itself', done => {
+			chai.expect(users.password(3)).can.remove.path(`_/rooms/-room_3/participants/${users.password(3).uid}`, done);
+		});
+		it('Moderator can remove participant', done => {
+			chai.expect(users.password(1)).can.remove.path(`_/rooms/-room_3/participants/${users.password(3).uid}`, done);
+		});
+		it('Owner can remove participant', done => {
+			chai.expect(users.password(2)).can.remove.path(`_/rooms/-room_3/participants/${users.password(1).uid}`, done);
+		});
+	});
+
+	describe('_/rooms/{roomId}/streams', () => {
+		// List streams
+		it('Anonymous users cannot list the streams of a room', done => {
+			chai.expect(users.unauthenticated).cannot.read.path(`_/rooms/-room_2/streams`, done);
+		});
+		it('Authenticated users cannot list the streams of a room if they are not a participant', done => {
+			chai.expect(users.password()).cannot.read.path(`_/rooms/-room_2/streams`, done);
+		});
+		it('Participants users can list the streams of a room', done => {
+			chai.expect(users.password(1)).can.read.path(`_/rooms/-room_3/streams`, done);
+		});
+
+		// Read stream info
+		it('Anonymous users cannot read a stream\'s data', done => {
+			chai.expect(users.unauthenticated).cannot.read.path(`_/rooms/-room_3/streams/-stream_3_1`, done);
+		});
+		it('Authenticated users cannot read a stream\'s data if they are not a participant', done => {
+			chai.expect(users.password()).cannot.read.path(`_/rooms/-room_3/streams/-stream_3_1`, done);
+		});
+		it('Participants users can read a stream\'s data', done => {
+			chai.expect(users.password(2)).can.read.path(`_/rooms/-room_3/streams/-stream_3_1`, done);
+		});
+
+		// Create stream
+		it('Anonymous users cannot add a new stream', done => {
+			chai.expect(users.unauthenticated).cannot.push({
+				// data: {
+					from : users.password(5).uid,
+	                device : "-device_5_1",
+	                type : "audio"
+				// }
+			}).path(`_/rooms/-room_3/streams`, done);
+		});
+		it('Authenticated users cannot add a new stream if they are not a participant', done => {
+			chai.expect(users.password()).cannot.push({
+				// data: {
+					from : users.password(5).uid,
+	                device : "-device_5_1",
+	                type : "audio"
+				// }
+			}).path(`_/rooms/-room_3/streams`, done);
+		});
+		it('Participant can add a new stream', done => {
+			chai.expect(users.password(3)).can.push({
+				// data: {
+					from : users.password(3).uid,
+	                device : "-device_3_1",
+	                type : "audio"
+				// }
+			}).path(`_/rooms/-room_3/streams`, done);
+		});
+
+		// Remove Stream
+		it('Publisher can remove his stream', done => {
+			chai.expect(users.password(3)).can.remove.path(`_/rooms/-room_3/streams/-stream_3_3`, done);
+		});
+		it('Moderator can remove a stream', done => {
+			chai.expect(users.password(1)).can.remove.path(`_/rooms/-room_3/streams/-stream_3_1`, done);
+		});
+		it('Owner can remove a stream', done => {
+			chai.expect(users.password(2)).can.remove.path(`_/rooms/-room_3/streams/-stream_3_1`, done);
+		});
+	});
+
+	describe('_/rooms/{roomId}/subscribers', () => {
+		// List subscribers
+		it('Anonymous users cannot list the subscribers of a stream within a room', done => {
+			chai.expect(users.unauthenticated).cannot.read.path(`_/rooms/-room_2/subscribers`, done);
+		});
+		it('Authenticated users cannot list the subscribers of a stream within a room if they are not a participant', done => {
+			chai.expect(users.password()).cannot.read.path(`_/rooms/-room_2/subscribers`, done);
+		});
+		it('Participants users can list the subscribers of a stream within a room', done => {
+			chai.expect(users.password(1)).can.read.path(`_/rooms/-room_3/subscribers`, done);
+		});
+
+		// Subscribe
+		it('Participant can subscribe to a stream', done => {
+			chai.expect(users.password(3)).can.set({
+				to: users.password(3).uid,
+			    pc: "-pc_1",
+			    _created: Date.now()
+			}).path(`_/rooms/-room_3/subscribers/-stream_3_1/-device_3_1`, done);
+		});
+
+		// Unsubscribe
+		it('Participant can unsubscribe to a stream', done => {
+			chai.expect(users.password(3)).can.remove.path(`_/rooms/-room_3/subscribers/-stream_3_2/-device_3_2`, done);
+		});
+		it('Publisher can remove the subscribers', done => {
+			chai.expect(users.password(3)).can.remove.path(`_/rooms/-room_3/subscribers/-stream_3_3`, done);
+		});
+		it('Moderator can remove the subscribers', done => {
+			chai.expect(users.password(1)).can.remove.path(`_/rooms/-room_3/subscribers/-stream_3_1`, done);
+		});
+		it('Owner can remove a subscriber', done => {
+			chai.expect(users.password(2)).can.remove.path(`_/rooms/-room_3/subscribers/-stream_3_1`, done);
+		});
+	});
+
+	describe('_/rooms/{roomId}/messages', () => {
+		// List messages
+		it('Anonymous users cannot list the messages of a room', done => {
+			chai.expect(users.unauthenticated).cannot.read.path(`_/rooms/-room_1/messages`, done);
+		});
+		it('Authenticated users cannot list the messages of a room if they are not a participant', done => {
+			chai.expect(users.password()).cannot.read.path(`_/rooms/-room_3/messages`, done);
+		});
+		it('Participants users can list the messages of a room', done => {
+			chai.expect(users.password(1)).can.read.path(`_/rooms/-room_3/messages`, done);
+		});
+
+		// Create message
+		it('Participants can add a new message', done => {
+			chai.expect(users.password(1)).can.push({
+				from: users.password(1).uid,
+				text: users.password(1).email,
+				_created: Date.now()
+			}).path(`_/rooms/-room_3/messages`, done)
+		});
+
+		// Modify message
+		it('Participants cannot modify another participant\'s message', done => {
+			chai.expect(users.password(3)).cannot.set(users.password(1).email).path(`_/rooms/-room_3/messages/-msg_1/text`, done)
+		});
+		it('Moderators can modify another participant\'s message', done => {
+			chai.expect(users.password(1)).can.set(users.password(1).email).path(`_/rooms/-room_3/messages/-msg_3/text`, done)
+		});
+		it('Owner can modify another participant\'s message', done => {
+			chai.expect(users.password(2)).can.set(users.password(2).email).path(`_/rooms/-room_3/messages/-msg_1/text`, done)
+		});
+
+		// Remove message
+		it('Participants can remove their message', done => {
+			chai.expect(users.password(3)).can.remove.path(`_/rooms/-room_3/messages/-msg_3`, done)
+		});
+		it('Moderators can remove another participant\'s message', done => {
+			chai.expect(users.password(1)).can.remove.path(`_/rooms/-room_3/messages/-msg_3`, done)
+		});
+		it('Owner can remove another participant\'s message', done => {
+			chai.expect(users.password(2)).can.remove.path(`_/rooms/-room_3/messages/-msg_1`, done)
+		});
+	});
+
+	describe('_/webrtc', () => {
+		it('Anonymous users cannot read _/webrtc', done => {
+			chai.expect(users.unauthenticated).cannot.read.path('_/webrtc', done);
+		});
+	});
+
+	describe('_/ice', () => {
+		it('Anonymous users can list ICE servers configurations', done => {
+			chai.expect(users.unauthenticated).can.read.path('_/ice/', done);
+		});
+		it('Authenticated users can list ICE servers configurations', done => {
+			chai.expect(users.password()).can.read.path('_/ice/', done);
+		});
+	});
+
+	// Remove users & namespace
+	after(destroyNamespace());
 });

@@ -1,92 +1,265 @@
 {
-  "root": {
-    "rooms" : {
-      "-K85HVr9Ke3yXovthoL7" : {
-        "meta" : {
-          "_created" : 1452878204505,
-          "name" : "room 1",
-          "owner" : "simplelogin:1",
-          "status" : "OPENED"
-        },
-        "participants" : {
-          "simplelogin:1" : {
-            "_joined" : 1452878204505,
-            "role" : "OWNER",
-            "status" : "CONNECTED"
-          },
-          "simplelogin:2" : {
-            "_joined" : 1452879445354,
-            "role" : "NONE",
-            "status" : "CONNECTED"
-          }
-        }
-      },
-      "-K85HuXI-iLao5YyBfOh" : {
-        "meta" : {
-          "_created" : 1452878309671,
-          "name" : "room 1",
-          "owner" : "simplelogin:1",
-          "status" : "OPENED"
-        },
-        "participants" : {
-          "simplelogin:1" : {
-            "_joined" : 1452878309671,
-            "role" : "OWNER",
-            "status" : "CONNECTED"
-          }
-        }
-      },
-      "-K85HuXmvsGtvqeT66oX" : {
-        "meta" : {
-          "_created" : 1452878309862,
-          "name" : "room 1",
-          "owner" : "simplelogin:1",
-          "status" : "OPENED"
-        },
-        "participants" : {
-          "simplelogin:1" : {
-            "_joined" : 1452878309862,
-            "role" : "OWNER",
-            "status" : "CONNECTED"
-          }
-        }
-      }
-    },
     "users" : {
-      "simplelogin:1" : {
-        "devices" : {
-          "-K854i2NIEvjQkhHlBdQ" : {
-            "sdk_version" : "js_0.2.3",
-            "status" : "CONNECTED",
-            "userAgent" : "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.79 Safari/537.36"
-          }
+        "simplelogin:1" : {
+            "lastSeen" : 1452879266889,
+            "name" : "user1",
+            "status" : "CONNECTED"
         },
-        "lastSeen" : 1452879266889,
-        "name" : "user1",
-        "status" : "CONNECTED"
-      },
-      "simplelogin:2" : {
-        "devices" : {
-          "-K851edlMJa1y3NUAKfm" : {
-            "sdk_version" : "js_undefined",
-            "status" : "CONNECTED",
-            "userAgent" : "Mozilla/5.0 (X11; Linux x86_64; rv:42.0) Gecko/20100101 Firefox/42.0"
-          },
-          "-K85LZn5J6sAz_izfD6Z" : {
-            "sdk_version" : "js_1.0.4",
-            "status" : "CONNECTED",
-            "userAgent" : "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.106 Safari/537.36"
-          }
+        "simplelogin:2" : {
+            "lastSeen" : 1453111249659,
+            "name" : "user2",
+            "status" : "CONNECTED"
+        }
+    },
+    "rooms" : {
+        "-room_1" : {
+            "_created" : 1452878204505,
+            "name" : "room 1",
+            "owner" : "simplelogin:1",
+            "status" : "OPENED"
         },
-        "lastSeen" : 1453111249659,
-        "name" : "user2",
-        "status" : "CONNECTED"
-      }
+        "-room_2" : {
+            "_created" : 1452878309671,
+            "name" : "room 2",
+            "owner" : "simplelogin:1",
+            "status" : "OPENED"
+        },
+        "-room_3" : {
+            "_created" : 1452878309862,
+            "name" : "room 3",
+            "owner" : "simplelogin:2",
+            "status" : "OPENED"
+        }
+    },
+    "_": {
+        "devices": {
+            "simplelogin:1" : {
+                "-device_1_1" : {
+                    "version" : {
+                        "reach": "js_1.0.4",
+                        "webcom": "js_0.2.3"
+                    },
+                    "status" : "CONNECTED",
+                    "userAgent" : "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.79 Safari/537.36"
+                }
+            },
+            "simplelogin:2" : {
+                "-device_2_1" : {
+                    "version" : {
+                        "reach": "js_1.0.3",
+                        "webcom": "js_0.2.2"
+                    },
+                    "status" : "CONNECTED",
+                    "userAgent" : "Mozilla/5.0 (X11; Linux x86_64; rv:42.0) Gecko/20100101 Firefox/42.0"
+                },
+                "-device_2_2" : {
+                    "version" : {
+                        "reach": "ios_1.0.1",
+                        "webcom": "ios_1.1.1"
+                    },
+                    "status" : "CONNECTED",
+                    "os" : "ios_9"
+                }
+            }
+        },
+        "invites": {
+            "simplelogin:1" : {
+                "-invite-1": {
+                    "from": "simplelogin:2",
+                    "room": "-room_3",
+                    "status": "ONGOING",
+                    "_created": 1453111249659
+                }
+            },
+            "simplelogin:2" : {
+                "-invite-1": {
+                    "from": "simplelogin:1",
+                    "room": "-room_1",
+                    "status": "ONGOING",
+                    "_created": 1453111249659
+                },
+                "-invite-2": {
+                    "from": "simplelogin:1",
+                    "room": "-room_2",
+                    "status": "ONGOING",
+                    "_created": 1453111249659
+                },
+                "-invite-3": {
+                    "from": "simplelogin:3",
+                    "room": "-room_4",
+                    "status": "ONGOING",
+                    "_created": 1453111249659
+                }
+            }
+        },
+        "rooms": {
+            "-room_1" : {
+                "participants": {
+                    "simplelogin:1" : {
+                        "_joined" : 1452878204505,
+                        "role" : "OWNER",
+                        "status" : "CONNECTED"
+                    },
+                    "simplelogin:2" : {
+                        "_joined" : 1452879445354,
+                        "role" : "NONE",
+                        "status" : "CONNECTED"
+                    }
+                },
+                "streams": {
+                    "-stream_1_1" : {
+                        "from" : "simplelogin:1",
+                        "device" : "-device_1_1",
+                        "type" : "audio-video",
+                        "subscribers": {
+                            "-device_2_1": {
+                                "to": "simplelogin:2",
+                                "pc": "-pc_1",
+                                "_created": 1452878309862
+                            }
+                        }
+                    },
+                    "-stream_1_2" : {
+                        "from" : "simplelogin:2",
+                        "device" : "-device_2_1",
+                        "type" : "audio-video"
+                    }
+                },
+                "subscribers": {
+                    "-stream_1_1" : {
+                        "-device_2_1": {
+                            "to": "simplelogin:2",
+                            "pc": "-pc_1",
+                            "_created": 1452878309862
+                        }
+                    }
+                }
+            },
+            "-room_2" : {
+                "participants": {
+                    "simplelogin:1" : {
+                        "_joined" : 1452878309671,
+                        "role" : "OWNER",
+                        "status" : "CONNECTED"
+                    }
+                }
+            },
+            "-room_3" : {
+                "participants": {
+                    "simplelogin:1" : {
+                        "_joined" : 1452878309862,
+                        "role" : "MODERATOR",
+                        "status" : "CONNECTED"
+                    },
+                    "simplelogin:2" : {
+                        "_joined" : 1452878309862,
+                        "role" : "OWNER",
+                        "status" : "CONNECTED"
+                    },
+                    "simplelogin:3" : {
+                        "_joined" : 1452878309862,
+                        "role" : "NONE",
+                        "status" : "CONNECTED"
+                    }
+                },
+                "streams": {
+                    "-stream_3_1" : {
+                        "from" : "simplelogin:1",
+                        "device" : "-device_1_1",
+                        "type" : "audio-video"
+                    },
+                    "-stream_3_2" : {
+                        "from" : "simplelogin:2",
+                        "device" : "-device_2_2",
+                        "type" : "audio"
+                    },
+                    "-stream_3_3" : {
+                        "from" : "simplelogin:3",
+                        "device" : "-device_2_2",
+                        "type" : "audio"
+                    }
+                },
+                "subscribers": {
+                    "-stream_3_1" : {
+                        "-device_2_2": {
+                            "to": "simplelogin:2",
+                            "pc": "-pc_2",
+                            "_created": 1452878309862
+                        }
+                    },
+                    "-stream_3_2" : {
+                        "-device_1_1": {
+                            "to": "simplelogin:1",
+                            "pc": "-pc_3",
+                            "_created": 1452878309862
+                        },
+                        "-device_3_2": {
+                            "to": "simplelogin:3",
+                            "pc": "-pc_4",
+                            "_created": 1452878309862
+                        }
+                    },
+                    "-stream_3_3" : {
+                        "-device_1_1": {
+                            "to": "simplelogin:1",
+                            "pc": "-pc_5",
+                            "_created": 1452878309862
+                        }
+                    }
+                },
+                "messages": {
+                    "-msg_1": {
+                        "from": "simplelogin:1",
+                        "text": "test",
+                        "_created": 1452878309862
+                    },
+                    "-msg_3": {
+                        "from": "simplelogin:3",
+                        "text": "test",
+                        "_created": 1452878309862
+                    }
+                }
+            }
+        },
+        "webrtc": {
+            "-device_1_1--device_2_1": {
+                "peers": ["simplelogin:1", "simplelogin:2"],
+                "connections": {
+                    "-pc_1": {
+                        "-device_1_1": {
+                            "offer": "sdp offer"
+                        },
+                        "-device_2_1": {
+                            "answer": "sdp answer"
+                        }
+                    }
+                }
+            },
+            "-device_1_1--device_2_2": {
+                "peers": ["simplelogin:1", "simplelogin:2"],
+                "connections": {
+                    "-pc_2": {
+                        "-device_1_1": {
+                            "offer": "sdp offer"
+                        },
+                        "-device_2_2": {
+                            "answer": "sdp answer"
+                        }
+                    },
+                    "-pc_3": {
+                        "-device_2_2": {
+                            "offer": "sdp offer"
+                        },
+                        "-device_1_1": {
+                            "answer": "sdp answer"
+                        }
+                    }
+                }
+            }
+        },
+        "ice": [
+            {"url": "ice1.webcom.io"},
+            {"url": "ice2.webcom.io"}
+        ]
     }
-  },
-  "users": {
-    "user1": {"uid": "simplelogin:1"},
-    "user2": {"uid": "simplelogin:2"},
-    "user3": {"uid": "simplelogin:3"}
-  }
 }
