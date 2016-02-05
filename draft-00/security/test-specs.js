@@ -125,9 +125,30 @@ describe('DRAFT-00', function() {// eslint-disable-line
 		});
 	});
 
-	describe('invites', () => {
+	describe('_/devices', () => {
+		// List users
+		it('Anonymous users cannot list devices', done => {
+			chai.expect(users.unauthenticated).cannot.read.path(`/_/devices/${users.password(1).uid}`, done);
+		});
+		it('Authenticated users cannot list devices', done => {
+			chai.expect(users.password()).cannot.read.path(`/_/devices/${users.password(1).uid}`, done);
+		});
+		it('a user can list his devices', done => {
+			chai.expect(users.password(1)).can.read.path(`/_/devices/${users.password(1).uid}`, done);
+		});
+
+		// Update device info
+		it('Authenticated users cannot write another user\'s device', done => {
+			chai.expect(users.password(2)).cannot.set('DISCONNECTED').to.path(`/_/devices/${users.password(1).uid}/-device_1_1/status`, done);
+		});
+		it('Authenticated users can update his device status', done => {
+			chai.expect(users.password(1)).can.set('DISCONNECTED').to.path(`/_/devices/${users.password(1).uid}/-device_1_1/status`, done);
+		});
+	});
+
+	describe('_/invites', () => {
 		// List invites
-		it('Anonymous users cannot read /invites', done => {
+		it('Anonymous users cannot read invites', done => {
 			chai.expect(users.unauthenticated).cannot.read.path('/_/invites', done);
 		});
 		it('A user can list his invites', done => {
