@@ -236,7 +236,7 @@ export const plugin = (chai, utils) => {
 		const operationType = utils.flag(this, 'operation');
 		const positivity = utils.flag(this, 'positivity');
 		const newData = utils.flag(this, 'operationData');
-		const user = this._obj === false ? 'Unauthenticated user' : this._obj.email;
+		const user = this._obj === false ? 'Unauthenticated user' : `${this._obj.email} (${this._obj.uid})`;
 
 		let method;
 		switch (operationType) {
