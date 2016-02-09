@@ -74,6 +74,7 @@ path /rooms/{roomId} is Room {
 path /_/rooms/{roomId} {
     read() { isAuthenticated() && this.participants[auth.uid] != null }
 }
+
 /**************************************
 * Participants
 **************************************/
@@ -243,10 +244,17 @@ type ICECandidate {
     sdpMLineIndex: Number
 }
 
-path /_/webrtc/{deviceIds} is PeerConnections {
-    read() { isAuthenticated() && this.peers[auth.uid] != null }
-    write() { isAuthenticated() && ((prior(this) == null && this.peers[auth.uid] != null) || (prior(this.peers[auth.uid]) != null)) }
+path /_/webrtc/{deviceIds} {
+    read() { isAuthenticated() && this[auth.uid] != null }
+    write() {
+        isAuthenticated() &&
+        (
+            (prior(this) != null && prior(this)[auth.uid] != null) ||
+            (prior(this) == null && this[auth.uid] != null)
+        )
+    }
 }
+
 path /_/webrtc/{deviceIds}/connections/{peerCoId}/{deviceId} is PeerConnectionDevice;
 
 /**************************************

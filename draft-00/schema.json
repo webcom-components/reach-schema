@@ -81,12 +81,13 @@
                         "type": "object",
                         "description": "List connections between two devices. (/_/webrtc/**$peer1_deviceId**-**$peer2_deviceId**)",
                         "properties": {
-                            "peers": {
-                                "type": "array",
-                                "description": "List of the devices owners ids (for security purposes.)",
-                                "items": {
-                                    "$ref": "UserId.json"
-                                }
+                            "$peer1_userId": {
+                                "type": "boolean",
+                                "description": "Peer's **$userId** (for security purposes)"
+                            },
+                            "$peer2_userId": {
+                                "type": "boolean",
+                                "description": "Peer's **$userId** (for security purposes)"
                             },
                             "connections": {
                                 "type": "array",
