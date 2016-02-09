@@ -223,7 +223,8 @@
         },
         "webrtc": {
             "-device_1_1--device_2_1": {
-                "peers": ["simplelogin:1", "simplelogin:2"],
+                "simplelogin:1": true,
+                "simplelogin:2": true,
                 "connections": {
                     "-pc_1": {
                         "-device_1_1": {
@@ -236,7 +237,8 @@
                 }
             },
             "-device_1_1--device_2_2": {
-                "peers": ["simplelogin:1", "simplelogin:2"],
+                "simplelogin:1": true,
+                "simplelogin:2": true,
                 "connections": {
                     "-pc_2": {
                         "-device_1_1": {

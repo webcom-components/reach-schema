@@ -398,8 +398,53 @@ describe('DRAFT-00', function() {// eslint-disable-line
 	});
 
 	describe('_/webrtc', () => {
-		it('Anonymous users cannot read _/webrtc', done => {
+		// List PeerConnections
+		it('Anonymous users cannot list PeerConnections', done => {
 			chai.expect(users.unauthenticated).cannot.read.path('_/webrtc', done);
+		});
+		it('Authenticated users cannot list PeerConnections', done => {
+			chai.expect(users.password(3)).cannot.read.path('_/webrtc', done);
+		});
+
+		// Read PeerConnections infos
+		it('Anonymous users cannot read PeerConnections infos', done => {
+			chai.expect(users.unauthenticated).cannot.read.path('_/webrtc/-device_1_1--device_2_2', done);
+		});
+		it('Authenticated users cannot read another User\'s PeerConnections infos', done => {
+			chai.expect(users.password(3)).cannot.read.path('_/webrtc/-device_1_1--device_2_2', done);
+		});
+		it('Authenticated users can read his PeerConnections infos', done => {
+			chai.expect(users.password(2)).can.read.path('_/webrtc/-device_1_1--device_2_2', done);
+		});
+
+		// Write PeerConnections infos
+		const pcData = {
+			"-device_1_1": {
+				"offer": "sdp offer"
+			},
+			"-device_2_2": {
+				"answer": "sdp answer"
+			}
+		};
+		it('Anonymous users cannot add a PeerConnection', done => {
+			chai.expect(users.unauthenticated).cannot.push(pcData).path('_/webrtc/-device_1_1--device_2_2/connections', done);
+		});
+		xit('Authenticated users cannot add another User\'s PeerConnection', done => {
+			// TODO Test with new server version (empty error instead of premission_denied with v1.11)
+			chai.expect(users.password()).cannot.push(pcData).path('_/webrtc/-device_1_1--device_2_2/connections', done);
+		});
+		it('Authenticated users can create a new PeerConnections', done => {
+			chai.expect(users.password(2)).can.push(pcData).path('_/webrtc/-device_1_1--device_2_2/connections', done);
+		});
+
+		// Create
+		it('Authenticated users can create a Device PeerConnections ', done => {
+			let d = {
+				"connections": {}
+			};
+			d[users.password(2).uid] = true;
+			d[users.password(3).uid] = true;
+			chai.expect(users.password(2)).can.set(d).path('_/webrtc/-device_2_1--device_3_2', done);
 		});
 	});
 
