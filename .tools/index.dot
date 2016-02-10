@@ -67,6 +67,6 @@
     {{~}}
     </ul>
 </nav>
-<script src="docson/widget.js" data-schema="../latest/schema.json"></script>
+<script src="docson/widget.js" data-schema="../{{=it.latest}}/schema.json"></script>
 </body>
 </html>

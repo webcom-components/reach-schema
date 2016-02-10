@@ -5,8 +5,11 @@ import {findLast, includes} from 'lodash/collection';
 import intersection from 'lodash/array/intersection';
 import minimist from 'minimist';
 
-// List draft versions
+// List schema versions
 export const schemas = readdirSync('.').filter((file) => /^draft-\d+$/.test(file) || /^legacy$/.test(file));
+
+// Latest schema version
+export const latestSchema = findLast(schemas, (v) => /^draft-\d+$/.test(v));
 
 // List security rules versions
 export const rules = (readdirSync('.').filter((file) => {
