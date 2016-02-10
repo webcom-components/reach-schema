@@ -3,68 +3,128 @@ import request from 'request';
 import Webcom from 'webcom';
 import uuid from 'uuid';
 import minimist from 'minimist';
-import Debug from 'console-debug';
 import range from 'lodash/utility/range';
+import find from 'lodash/collection/find';
 
-const args = minimist(process.argv.slice(2), {boolean: ['log']});
-const host = args.server || 'https://webcom.orange.com';
-const proxy = args.proxy;
-const ns = uuid.v1();
-const simplelogin = {};
-
-if(!args.log) {
-	// Override console warn to avoid log pollution by Webcom
-	const debugConsole = new Debug({
-		uncaughtExceptionCatch: false,      // Do we want to catch uncaughtExceptions?
-		consoleFilter: ['LOG', 'WARN'],     // Filter these console output types
-		colors: true                        // do we want pretty pony colors in our console output?
-	});
-	console.warn = debugConsole.warn.bind(debugConsole);
+// TODO add .webcomrc.yml | .webcomrc.json support for options ?
+const defaultOptions = {
+	server: 'https://webcom.orange.com',
+	log: false,
+	ns: uuid.v1()
 }
 
+// Parse args
+const config = minimist(process.argv.slice(2), {
+	boolean: ['log'],
+	default: defaultOptions
+});
+
+// Created users
+const simplelogin = {};
+let authenticated = null;
+
+// Override console warn to avoid log pollution by Webcom
+if(!config.log) {
+	console.warn = () => {};
+}
+
+// Auth token
+//	Generate a JWT using the namespace's secret & npm run jwt
 const admin_jwt = process.env.WEBCOM_JWT;
 
-const createNamespace = (token, namespace = ns) => new Promise((resolve, reject) => {
+/**
+ * Get webcom server version
+ * @return Promise
+ */
+const serverVersion = () => new Promise((resolve, reject) => {
+	// Force node to accept unauthorized certificates (for self-signed certs)
+	process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0';
+	request({
+		url: `${config.server}/version/v.json`,
+		proxy: config.proxy
+	}, (err, header, body) => {
+		if(err) {
+			reject(err);
+		} else {
+			const versionData = JSON.parse(body);
+			resolve(parseFloat(versionData['Implementation-Version'] || versionData['Specification-Version'] || 1));
+		}
+	});
+});
+
+/**
+ * Create a namespace.
+ * You need to be authenticated on the 'accounts' namespace to to that.
+ * @param {string} token - Your admin token
+ * @param {string} [namespace=config.ns] - The namespace to create. Default to the config ns value.
+ * @return Promise
+ */
+const createNamespace = (token, namespace = config.ns) => new Promise((resolve, reject) => {
 	request.post({
-		url: `${host}/admin/base/${namespace}`,
+		url: `${config.server}/admin/base/${namespace}`,
 		formData: {token},
-		proxy
+		proxy: config.proxy
 	}, err => err ? reject(err) : resolve());
 });
 
-const deleteNamespace = (token, namespace = ns) => new Promise((resolve, reject) => {
+/**
+ * Delete a namespace.
+ * You need to be authenticated on the 'accounts' namespace to to that.
+ * @param {string} token - Your admin token
+ * @param {string} [namespace=config.ns] - The namespace to delete. Default to the config ns value.
+ * @return Promise
+ */
+const deleteNamespace = (token, namespace = config.ns) => new Promise((resolve, reject) => {
 	request.post({
-		url: `${host}/admin/base/${namespace}`,
+		url: `${config.server}/admin/base/${namespace}`,
 		formData: {
 			_method: 'DELETE',
 			namespace,
 			token
 		},
-		proxy
+		proxy: config.proxy
 	}, err => err ? reject(err) : resolve());
 });
 
-const adminToken = (token, namespace = ns) => new Promise((resolve, reject) => {
+/**
+ * Get the admin token on a namespace.
+ * @param {string} token - Your auth token
+ * @param {string} [namespace=config.ns] - The namespace to get the token for. Default to the config ns value.
+ * @return Promise
+ */
+const adminToken = (token, namespace = config.ns) => new Promise((resolve, reject) => {
 	request({
-		url: `${host}/admin/base/${namespace}/token?token=${token}`,
-		proxy
+		url: `${config.server}/admin/base/${namespace}/token?token=${token}`,
+		proxy: config.proxy
 	}, (err, header, body) => err ? reject(err) : resolve(JSON.parse(body).authToken));
 });
 
-const putRules = (token, rulesToTest, namespace = ns) => new Promise((resolve, reject) => {
+/**
+ * Set the security rules for a namespace.
+ * @param {string} token - Your admin token
+ * @param {string} [namespace=config.ns] - The namespace to create. Default to the config ns value.
+ * @return Promise
+ */
+const putRules = (token, rulesToTest, namespace = config.ns) => new Promise((resolve, reject) => {
 	request({
-		url: `${host}/base/${namespace}/.settings/rules.json?auth=${token}`,
+		url: `${config.server}/base/${namespace}/.settings/rules.json?auth=${token}`,
 		method: 'PUT',
 		json: rulesToTest,
-		proxy
+		proxy: config.proxy
 	}, (err, header, body) => {
 		const parseError = err || (body && body.error ? new Error(body.error) : false)
 		parseError ? reject(parseError) : resolve();
 	});
 });
 
-const createUser = (namespace, email) => new Promise((resolve, reject) => {
-	(new Webcom(`${host}/base/${namespace}`, proxy)).createUser(email, 'password', (err, authData) => {
+/**
+ * Create a user in a namespace.
+ * @param {string} email - The user email
+ * @param {string} [namespace=config.ns] - The namespace to create. Default to the config ns value.
+ * @return Promise
+ */
+const createUser = (email, namespace = config.ns) => new Promise((resolve, reject) => {
+	(new Webcom(`${config.server}/base/${namespace}`, config.proxy)).createUser(email, 'password', (err, authData) => {
 		if(err) {
 			reject(err);
 			return console.error(err);
@@ -79,8 +139,14 @@ const createUser = (namespace, email) => new Promise((resolve, reject) => {
 	});
 });
 
-const deleteUser = (namespace, email) => new Promise((resolve, reject) => {
-	(new Webcom(`${host}/base/${namespace}`, proxy)).removeUser(email, 'password', (err) => {
+/**
+ * Delete a user in a namespace.
+ * @param {string} email - The user email
+ * @param {string} [namespace=config.ns] - The namespace to create. Default to the config ns value.
+ * @return Promise
+ */
+const deleteUser = (email, namespace = config.ns) => new Promise((resolve, reject) => {
+	(new Webcom(`${config.server}/base/${namespace}`, config.proxy)).removeUser(email, 'password', (err) => {
 		if (err) {
 			reject(err);
 			return console.error(err);
@@ -89,8 +155,14 @@ const deleteUser = (namespace, email) => new Promise((resolve, reject) => {
 	});
 });
 
-const auth = (token, namespace = ns) => new Promise((resolve, reject) => {
-	(new Webcom(`${host}/base/${namespace}`, proxy)).auth(token, (err, authData) => {
+/**
+ * Authenticate with a token.
+ * @param {string} token - auth token
+ * @param {string} [namespace=config.ns] - The namespace to create. Default to the config ns value.
+ * @return Promise
+ */
+const auth = (token, namespace = config.ns) => new Promise((resolve, reject) => {
+	(new Webcom(`${config.server}/base/${namespace}`, config.proxy)).auth(token, (err, authData) => {
 		if (err) {
 			reject(err);
 		} else {
@@ -99,8 +171,32 @@ const auth = (token, namespace = ns) => new Promise((resolve, reject) => {
 	}, reject);
 });
 
-const update = (path, data) => new Promise((resolve, reject) => {
-	(new Webcom(`${host}/base/${ns}/${path}`, proxy)).update(data, (err) => {
+/**
+ * Authenticate with a email/password.
+ * @param {string} email
+ * @param {string} password
+ * @param {string} [namespace=config.ns] - The namespace to create. Default to the config ns value.
+ * @return Promise
+ */
+const authWithPassword = (email, password, namespace = config.ns) => new Promise((resolve, reject) => {
+	(new Webcom(`${config.server}/base/${namespace}`, config.proxy)).authWithPassword({email, password, rememberMe: false}, (err, authData) => {
+		if (err) {
+			reject(err);
+		} else {
+			resolve(authData && authData.auth ? authData.auth : authData);
+		}
+	}, reject);
+});
+
+/**
+ * Update data
+ * @param {string} path - The path to set data to
+ * @param {string} data - The data to set
+ * @param {string} [namespace=config.ns] - The namespace. Default to the config ns value.
+ * @return Promise
+ */
+const update = (path, data, namespace = config.ns) => new Promise((resolve, reject) => {
+	(new Webcom(`${config.server}/base/${namespace}/${path}`, config.proxy)).update(data, (err) => {
 		if (err) {
 			reject(err);
 		} else {
@@ -109,8 +205,15 @@ const update = (path, data) => new Promise((resolve, reject) => {
 	});
 });
 
-const push = (path, data) => new Promise((resolve, reject) => {
-	(new Webcom(`${host}/base/${ns}/${path}`, proxy)).push(data, (err) => {
+/**
+ * Push data
+ * @param {string} path - The path to push data to
+ * @param {string} data - The data to push
+ * @param {string} [namespace=config.ns] - The namespace. Default to the config ns value.
+ * @return Promise
+ */
+const push = (path, data, namespace = config.ns) => new Promise((resolve, reject) => {
+	(new Webcom(`${config.server}/base/${namespace}/${path}`, config.proxy)).push(data, (err) => {
 		if (err) {
 			reject(err);
 		} else {
@@ -119,8 +222,15 @@ const push = (path, data) => new Promise((resolve, reject) => {
 	});
 });
 
-const set = (path, data) => new Promise((resolve, reject) => {
-	(new Webcom(`${host}/base/${ns}/${path}`, proxy)).set(data, (err) => {
+/**
+ * Set data
+ * @param {string} path - The path to set data to
+ * @param {string} data - The data to set
+ * @param {string} [namespace=config.ns] - The namespace. Default to the config ns value.
+ * @return Promise
+ */
+const set = (path, data, namespace = config.ns) => new Promise((resolve, reject) => {
+	(new Webcom(`${config.server}/base/${namespace}/${path}`, config.proxy)).set(data, (err) => {
 
 		if (err) {
 			reject(err);
@@ -130,8 +240,15 @@ const set = (path, data) => new Promise((resolve, reject) => {
 	});
 });
 
-const remove = (path, data) => new Promise((resolve, reject) => {
-	(new Webcom(`${host}/base/${ns}/${path}`, proxy)).remove((err) => {
+/**
+ * Remove data
+ * @param {string} path - The path to remove data from
+ * @param {string} data - The data to remove. Not used but present to simplify chai plugin
+ * @param {string} [namespace=config.ns] - The namespace. Default to the config ns value.
+ * @return Promise
+ */
+const remove = (path, data = null, namespace = config.ns) => new Promise((resolve, reject) => {
+	(new Webcom(`${config.server}/base/${namespace}/${path}`, config.proxy)).remove((err) => {
 		if (err) {
 			reject(err);
 		} else {
@@ -140,61 +257,99 @@ const remove = (path, data) => new Promise((resolve, reject) => {
 	});
 });
 
-const read = (path) => new Promise(
+/**
+ * Read data
+ * @param {string} path - The path to read data from
+ * @param {string} data - The data to read. Not used but present to simplify chai plugin
+ * @param {string} [namespace=config.ns] - The namespace. Default to the config ns value.
+ * @return Promise
+ */
+const read = (path, data = null, namespace = config.ns) => new Promise(
 	(resolve, reject) => {
-		(new Webcom(`${host}/base/${ns}/${path}`, proxy)).once('value', resolve, reject);
+		(new Webcom(`${config.server}/base/${namespace}/${path}`, config.proxy)).once('value', resolve, reject);
 	}
 );
 
-const logout = (path = '') => new Promise(
+/**
+ * Logout
+ * @param {string} [namespace=config.ns] - The namespace. Default to the config ns value.
+ * @return Promise
+ */
+const logout = (namespace = config.ns) => new Promise(
 	(resolve, reject) => {
-		(new Webcom(`${host}/base/${ns}/${path}`, proxy)).logout(err => err ? reject(err) : resolve());
+		(new Webcom(`${config.server}/base/${namespace}`, config.proxy)).logout(err => err ? reject(err) : resolve());
 	}
 );
 
-export const initNamespace = (rules, nbUser = 5) => done => {
-	console.info(`\n  \u2622 ${ns}\n`);
+/**
+ * Initialize a namespace
+ * @param {object} rules - the security rules as a JSON object
+ * @param {string} [namespace=config.ns] - The namespace. Default to the config ns value.
+ * @param {string} [nbUser=5] - the number of users to create (simplelogin:1, ..., simplelogin:<nbUser>)
+ * @return Function
+ */
+export const initNamespace = (rules, namespace = config.ns, nbUser = 5) => done => {
+	console.info(`\n  \u2622 ${namespace}\n`);
 	auth(admin_jwt, 'accounts')
 		.then(() => {
 			console.warn('auth success');
-			return createNamespace(admin_jwt, ns)
+			return createNamespace(admin_jwt, namespace);
 		})
 		.then(() => {
-			console.warn(`namespace ${ns} created`);
-			return adminToken(admin_jwt, ns)
+			console.warn(`namespace ${namespace} created`);
+			return adminToken(admin_jwt, namespace)
 		})
 		.then((token) => {
-			console.warn(`admin token for namespace ${ns} ok`);
-			return putRules(token, rules);
+			console.warn(`admin token for namespace ${namespace} ok`);
+			return putRules(token, rules, namespace);
 		})
 		.then(() => {
-			console.warn(`rules set for namespace ${ns}`);
-			const users = range(1, nbUser + 1).map(id => createUser(ns, `user${id}@reach.io`));
+			console.warn(`rules set for namespace ${namespace}`);
+			const users = range(1, nbUser + 1).map(id => createUser(`user${id}@reach.io`, namespace));
 			return Promise.all(users);
 		})
 		.then(() => {
-			console.warn(`users created for namespace ${ns}`);
-			done()
+			console.warn(`users created for namespace ${namespace}`);
+			return createUser('user.authenticated@reach.io', namespace);
+		})
+		.then(() => {
+			console.warn(`default authenticated user created for namespace ${namespace}`);
+			authenticated = find(simplelogin, {email: 'user.authenticated@reach.io'})
+			done();
 		})
 		.catch(done);
 };
 
-export const destroyNamespace = () => done => {
-	const users = Object.keys(simplelogin).map(id => deleteUser(ns, simplelogin[id].email));
+/**
+ * Destroy a namespace
+ * @param {string} [namespace=config.ns] - The namespace. Default to the config ns value.
+ * @return Function
+ */
+export const destroyNamespace = (namespace = config.ns) => done => {
+	const users = Object.keys(simplelogin).map(id => deleteUser(simplelogin[id].email, namespace));
 	Promise.all(users)
-		.then(() => deleteNamespace(admin_jwt, ns))
+		.then(() => deleteNamespace(admin_jwt, namespace))
 		.then(() => done())
 		.catch(done);
 };
 
-export const resetNamespace = (data) => done => {
-	adminToken(admin_jwt, ns)
-		.then((token) => auth(token, ns))
-		.then(() => set('', data))
+/**
+ * Reset a namespace (i.e. put default dataset)
+ * @param {object} data - The dataset
+ * @param {string} [namespace=config.ns] - The namespace. Default to the config ns value.
+ * @return Function
+ */
+export const resetNamespace = (data, namespace = config.ns) => done => {
+	adminToken(admin_jwt, namespace)
+		.then((token) => auth(token, namespace))
+		.then(() => set('', data, namespace))
 		.then(() => done())
 		.catch(done);
 };
 
+/**
+ * Security rules chai plugin
+ */
 export const plugin = (chai, utils) => {
 	// Add Properties
 	[
@@ -236,7 +391,16 @@ export const plugin = (chai, utils) => {
 		const operationType = utils.flag(this, 'operation');
 		const positivity = utils.flag(this, 'positivity');
 		const newData = utils.flag(this, 'operationData');
-		const user = this._obj === false ? 'Unauthenticated user' : `${this._obj.email} (${this._obj.uid})`;
+
+		let token = false;
+		let user = 'Unauthenticated user';
+		if(this._obj == true) {
+			token = authenticated.token;
+			user = 'Authenticated user'
+		} else if(this._obj != false) {
+			token = this._obj.token;
+			user = `${this._obj.email} (${this._obj.uid})`
+		}
 
 		let method;
 		switch (operationType) {
@@ -261,7 +425,7 @@ export const plugin = (chai, utils) => {
 				break;
 		}
 
-		(this._obj ? auth(this._obj.token) : logout(path)).then(() => {
+		(token ? auth(token) : logout()).then(() => {
 			const errorMsg = newData ? `${operationType} '${newData instanceof Object ? JSON.stringify(newData) : newData}' to ${path}` : `${operationType} ${path}`
 			if (positivity) {
 				method(path, newData).then(() => done(), (err) => {
@@ -291,5 +455,6 @@ export const plugin = (chai, utils) => {
 
 export const users = {
 	unauthenticated: false,
-	password: (id = 5) => simplelogin[id]
+	authenticated: true,
+	password: (id) => id ? simplelogin[id] : authenticated
 };

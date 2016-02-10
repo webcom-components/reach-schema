@@ -48,13 +48,13 @@ describe('DRAFT-00', function() {// eslint-disable-line
 			chai.expect(users.unauthenticated).cannot.read.path('/', done);
 		});
 		it('Authenticated users cannot read root', done => {
-			chai.expect(users.password()).cannot.read.path('/', done);
+			chai.expect(users.authenticated).cannot.read.path('/', done);
 		});
 		it('Anonymous users cannot write anything to root', done => {
 			chai.expect(users.unauthenticated).cannot.set({test: 'test'}).path('/test', done);
 		});
 		it('Authenticated users cannot write anything to root', done => {
-			chai.expect(users.password()).cannot.set({test: 'test'}).path('/test', done);
+			chai.expect(users.authenticated).cannot.set({test: 'test'}).path('/test', done);
 		});
 	});
 
@@ -64,7 +64,7 @@ describe('DRAFT-00', function() {// eslint-disable-line
 			chai.expect(users.unauthenticated).cannot.read.path('/users', done);
 		});
 		it('Authenticated users can list users', done => {
-			chai.expect(users.password()).can.read.path('/users', done);
+			chai.expect(users.authenticated).can.read.path('/users', done);
 		});
 
 		// Register
@@ -72,7 +72,7 @@ describe('DRAFT-00', function() {// eslint-disable-line
 			chai.expect(users.unauthenticated).cannot.set(userData()).to.path('/users/toto', done);
 		});
 		it('Authenticated users can register', done => {
-			chai.expect(users.password()).can.set(userData()).to.path(`/users/${users.password().uid}`, done);
+			chai.expect(users.authenticated).can.set(userData()).to.path(`/users/${users.password().uid}`, done);
 		});
 
 		// Update user info
@@ -80,7 +80,7 @@ describe('DRAFT-00', function() {// eslint-disable-line
 			chai.expect(users.password(1)).cannot.set(userData(1)).to.path(`/users/${users.password(2).uid}`, done);
 		});
 		it('Authenticated users can update status', done => {
-			chai.expect(users.password()).can.set('SLEEPING').to.path(`/users/${users.password().uid}/status`, done);
+			chai.expect(users.authenticated).can.set('SLEEPING').to.path(`/users/${users.password().uid}/status`, done);
 		});
 	});
 
@@ -93,7 +93,7 @@ describe('DRAFT-00', function() {// eslint-disable-line
 			chai.expect(users.unauthenticated).cannot.read.path(`rooms/-room_1/status`, done);
 		});
 		it('Authenticated users can list rooms', done => {
-			chai.expect(users.password()).can.read.path('rooms', done);
+			chai.expect(users.authenticated).can.read.path('rooms', done);
 		});
 
 		// Read room data
@@ -101,7 +101,7 @@ describe('DRAFT-00', function() {// eslint-disable-line
 			chai.expect(users.unauthenticated).cannot.push(roomData()).path('rooms', done);
 		});
 		it('Authenticated users can read a room metadata', done => {
-			chai.expect(users.password()).can.read.path(`rooms/-room_1/status`, done);
+			chai.expect(users.authenticated).can.read.path(`rooms/-room_1/status`, done);
 		});
 
 		// Create room
@@ -109,7 +109,7 @@ describe('DRAFT-00', function() {// eslint-disable-line
 			chai.expect(users.unauthenticated).cannot.push(roomData()).path('rooms', done);
 		});
 		it('Authenticated users can create a room', done => {
-			chai.expect(users.password()).can.push(roomData()).path('rooms', done);
+			chai.expect(users.authenticated).can.push(roomData()).path('rooms', done);
 		});
 
 
@@ -131,7 +131,7 @@ describe('DRAFT-00', function() {// eslint-disable-line
 			chai.expect(users.unauthenticated).cannot.read.path(`/_/devices/${users.password(1).uid}`, done);
 		});
 		it('Authenticated users cannot list devices', done => {
-			chai.expect(users.password()).cannot.read.path(`/_/devices/${users.password(1).uid}`, done);
+			chai.expect(users.authenticated).cannot.read.path(`/_/devices/${users.password(1).uid}`, done);
 		});
 		it('a user can list his devices', done => {
 			chai.expect(users.password(1)).can.read.path(`/_/devices/${users.password(1).uid}`, done);
@@ -184,7 +184,7 @@ describe('DRAFT-00', function() {// eslint-disable-line
 			chai.expect(users.unauthenticated).cannot.read.path('_/rooms', done);
 		});
 		it('Authenticated users cannot read _rooms', done => {
-			chai.expect(users.password()).cannot.read.path('_/rooms', done);
+			chai.expect(users.authenticated).cannot.read.path('_/rooms', done);
 		});
 
 		// Read room private data
@@ -192,7 +192,7 @@ describe('DRAFT-00', function() {// eslint-disable-line
 			chai.expect(users.unauthenticated).cannot.read.path('_/rooms/-room_1', done);
 		});
 		it('Authenticated users cannot read a room private data', done => {
-			chai.expect(users.password()).cannot.read.path('_/rooms/-room_1', done);
+			chai.expect(users.authenticated).cannot.read.path('_/rooms/-room_1', done);
 		});
 	});
 
@@ -202,7 +202,7 @@ describe('DRAFT-00', function() {// eslint-disable-line
 			chai.expect(users.unauthenticated).cannot.read.path(`_/rooms/-room_1/participants`, done);
 		});
 		it('Authenticated users cannot list the participants of a room if they are not a participant', done => {
-			chai.expect(users.password()).cannot.read.path(`_/rooms/-room_1/participants`, done);
+			chai.expect(users.authenticated).cannot.read.path(`_/rooms/-room_1/participants`, done);
 		});
 		it('Participants users can list the participants of a room', done => {
 			chai.expect(users.password(1)).can.read.path(`_/rooms/-room_1/participants`, done);
@@ -213,7 +213,7 @@ describe('DRAFT-00', function() {// eslint-disable-line
 			chai.expect(users.unauthenticated).cannot.read.path(`_/rooms/-room_1/participants/${users.password(1).uid}`, done);
 		});
 		it('Authenticated users cannot read a participant\'s data if they are not a participant', done => {
-			chai.expect(users.password()).cannot.read.path(`_/rooms/-room_1/participants/${users.password(1).uid}`, done);
+			chai.expect(users.authenticated).cannot.read.path(`_/rooms/-room_1/participants/${users.password(1).uid}`, done);
 		});
 		it('Participants users can read a participant\'s data', done => {
 			chai.expect(users.password(2)).can.read.path(`_/rooms/-room_1/participants/${users.password(1).uid}`, done);
@@ -259,7 +259,7 @@ describe('DRAFT-00', function() {// eslint-disable-line
 			chai.expect(users.unauthenticated).cannot.read.path(`_/rooms/-room_2/streams`, done);
 		});
 		it('Authenticated users cannot list the streams of a room if they are not a participant', done => {
-			chai.expect(users.password()).cannot.read.path(`_/rooms/-room_2/streams`, done);
+			chai.expect(users.authenticated).cannot.read.path(`_/rooms/-room_2/streams`, done);
 		});
 		it('Participants users can list the streams of a room', done => {
 			chai.expect(users.password(1)).can.read.path(`_/rooms/-room_3/streams`, done);
@@ -270,7 +270,7 @@ describe('DRAFT-00', function() {// eslint-disable-line
 			chai.expect(users.unauthenticated).cannot.read.path(`_/rooms/-room_3/streams/-stream_3_1`, done);
 		});
 		it('Authenticated users cannot read a stream\'s data if they are not a participant', done => {
-			chai.expect(users.password()).cannot.read.path(`_/rooms/-room_3/streams/-stream_3_1`, done);
+			chai.expect(users.authenticated).cannot.read.path(`_/rooms/-room_3/streams/-stream_3_1`, done);
 		});
 		it('Participants users can read a stream\'s data', done => {
 			chai.expect(users.password(2)).can.read.path(`_/rooms/-room_3/streams/-stream_3_1`, done);
@@ -287,7 +287,7 @@ describe('DRAFT-00', function() {// eslint-disable-line
 			}).path(`_/rooms/-room_3/streams`, done);
 		});
 		it('Authenticated users cannot add a new stream if they are not a participant', done => {
-			chai.expect(users.password()).cannot.push({
+			chai.expect(users.authenticated).cannot.push({
 				// data: {
 					from : users.password(5).uid,
 	                device : "-device_5_1",
@@ -323,7 +323,7 @@ describe('DRAFT-00', function() {// eslint-disable-line
 			chai.expect(users.unauthenticated).cannot.read.path(`_/rooms/-room_2/subscribers`, done);
 		});
 		it('Authenticated users cannot list the subscribers of a stream within a room if they are not a participant', done => {
-			chai.expect(users.password()).cannot.read.path(`_/rooms/-room_2/subscribers`, done);
+			chai.expect(users.authenticated).cannot.read.path(`_/rooms/-room_2/subscribers`, done);
 		});
 		it('Participants users can list the subscribers of a stream within a room', done => {
 			chai.expect(users.password(1)).can.read.path(`_/rooms/-room_3/subscribers`, done);
@@ -359,7 +359,7 @@ describe('DRAFT-00', function() {// eslint-disable-line
 			chai.expect(users.unauthenticated).cannot.read.path(`_/rooms/-room_1/messages`, done);
 		});
 		it('Authenticated users cannot list the messages of a room if they are not a participant', done => {
-			chai.expect(users.password()).cannot.read.path(`_/rooms/-room_3/messages`, done);
+			chai.expect(users.authenticated).cannot.read.path(`_/rooms/-room_3/messages`, done);
 		});
 		it('Participants users can list the messages of a room', done => {
 			chai.expect(users.password(1)).can.read.path(`_/rooms/-room_3/messages`, done);
@@ -431,7 +431,7 @@ describe('DRAFT-00', function() {// eslint-disable-line
 		});
 		xit('Authenticated users cannot add another User\'s PeerConnection', done => {
 			// TODO Test with new server version (empty error instead of premission_denied with v1.11)
-			chai.expect(users.password()).cannot.push(pcData).path('_/webrtc/-device_1_1--device_2_2/connections', done);
+			chai.expect(users.authenticated).cannot.push(pcData).path('_/webrtc/-device_1_1--device_2_2/connections', done);
 		});
 		it('Authenticated users can create a new PeerConnections', done => {
 			chai.expect(users.password(2)).can.push(pcData).path('_/webrtc/-device_1_1--device_2_2/connections', done);
@@ -453,7 +453,7 @@ describe('DRAFT-00', function() {// eslint-disable-line
 			chai.expect(users.unauthenticated).can.read.path('_/ice/', done);
 		});
 		it('Authenticated users can list ICE servers configurations', done => {
-			chai.expect(users.password()).can.read.path('_/ice/', done);
+			chai.expect(users.authenticated).can.read.path('_/ice/', done);
 		});
 	});
 
