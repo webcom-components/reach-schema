@@ -34,7 +34,7 @@ const roomData = (owner, status = 'OPENED', name = 'testRoom', _created = Date.n
 
 describe('DRAFT-00', function() {// eslint-disable-line
 	// Don't change this to arrow function as it will mess with the Mocha context (https://mochajs.org/#arrow-functions)
-	this.slow(process.env.CI == true && process.env.TRAVIS == true ? 500 : 100);
+	this.slow(process.env.CI === true && process.env.TRAVIS === true ? 500 : 100);
 
 	// Sets rules & creates users
 	before(initNamespace(rules));

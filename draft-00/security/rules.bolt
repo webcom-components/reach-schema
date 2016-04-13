@@ -8,10 +8,6 @@ type Extra extends Object {
 
 isAuthenticated() { (auth != null) }
 isUser(uid) { (auth.uid == uid) }
-isParticipant(roomId) { root._.rooms[roomId] != null && root._.rooms[roomId].participants != null && root._.rooms[roomId].participants[auth.uid] != null && root._rooms[roomId].participants[auth.uid]._joined != null }
-isModerator(roomId) { isParticipant(roomId) && root._rooms[roomId].participants[auth.uid].role == 'MODERATOR'}
-isOwner(roomId) { root.rooms[roomId] != null && root.rooms[roomId].owner == auth.uid }
-
 
 /**************************************
 * Users
@@ -25,9 +21,14 @@ type User extends Extra {
 
 type Device {
     status: DeviceStatus
-    sdk_version: Null | String
+    sdk: DeviceSdk
     os: Null | String
     userAgent: Null | String
+}
+
+type DeviceSdk {
+	reach: String
+	webcom: String
 }
 
 type DeviceStatus extends String {
@@ -75,6 +76,14 @@ path /_/rooms/{roomId} {
     read() { isAuthenticated() && this.participants[auth.uid] != null }
 }
 
+path /_/rooms/{roomId}/meta is Room {
+    write() { isAuthenticated() && (prior(this) == null || isUser(prior(this).owner)) }
+}
+
+isOwner(child) { child.parent().parent().meta.owner == auth.uid }
+isParticipant(child) { child.parent().parent().participants[auth.uid] != null }
+isModerator(child) { child.parent().parent().participants[auth.uid].role == 'MODERATOR' }
+
 /**************************************
 * Participants
 **************************************/
@@ -95,7 +104,7 @@ type Role extends String {
 path /_/rooms/{roomId}/participants/{userId} is Participant {
     write() {
         isAuthenticated() && (
-            isOwner(roomId) ||
+            isOwner(this) ||
             (
                 prior(this).parent()[auth.uid] != null &&
                 prior(this).parent()[auth.uid].role == 'MODERATOR' &&
@@ -125,11 +134,10 @@ path /_/rooms/{roomId}/messages/{msgId} is Message {
     write() {
         isAuthenticated() &&
         (
-            isOwner(roomId) ||
+            isOwner(this) || isModerator(prior(this)) ||
             (
-                prior(this).parent().parent().participants[auth.uid] != null &&
+                isParticipant(prior(this)) &&
                 (
-                    prior(this).parent().parent().participants[auth.uid].role == 'MODERATOR' ||
                     prior(this) == null ||
                     isUser(prior(this).from)
                 )
@@ -162,11 +170,10 @@ path /_/rooms/{roomId}/streams/{streamId} is StreamData {
     write() {
         isAuthenticated() &&
         (
-            isOwner(roomId) ||
+            isOwner(this) || isModerator(prior(this)) ||
             (
-                prior(this).parent().parent().participants[auth.uid] != null &&
+                isParticipant(prior(this)) &&
                 (
-                    prior(this).parent().parent().participants[auth.uid].role == 'MODERATOR' ||
                     prior(this) == null ||
                     isUser(prior(this.from))
                 )
@@ -179,12 +186,11 @@ path /_/rooms/{roomId}/subscribers/{streamId} is Subscriber[] {
     write() {
         isAuthenticated() &&
         (
-            isOwner(roomId) ||
+            isOwner(this) || isModerator(prior(this)) ||
             (
-                prior(this).parent().parent().participants[auth.uid] != null &&
+                isParticipant(prior(this)) &&
                 (
-                    prior(this).parent().parent().participants[auth.uid].role == 'MODERATOR' ||
-                    prior(this).parent().parent().streams[streamId].from == auth.uid ||
+                    isUser(prior(this).parent().parent().streams[streamId].from) ||
                     prior(this[key()]) == null ||
                     isUser(prior(this[key()].to))
                 )
@@ -216,7 +222,7 @@ path /_/invites/{userId}/{invitationId} is Invitation {
         isAuthenticated() &&
         (
             isUser(userId) ||
-            (prior(this) == null && isUser(this.from) && (isOwner(this.room) || root._.rooms[this.room].participants[auth.uid].role == 'MODERATOR')) ||
+            (prior(this) == null && isUser(this.from) && (isUser(this.parent().parent().parent().rooms[this.room].meta.owner) || this.parent().parent().parent().rooms[this.room].participants[auth.uid].role == 'MODERATOR')) ||
             (isUser(prior(this.from)))
         )
     }

@@ -35,7 +35,7 @@
         "devices": {
             "simplelogin:1" : {
                 "-device_1_1" : {
-                    "version" : {
+                    "sdk" : {
                         "reach": "js_1.0.4",
                         "webcom": "js_0.2.3"
                     },
@@ -45,7 +45,7 @@
             },
             "simplelogin:2" : {
                 "-device_2_1" : {
-                    "version" : {
+                    "sdk" : {
                         "reach": "js_1.0.3",
                         "webcom": "js_0.2.2"
                     },
@@ -53,7 +53,7 @@
                     "userAgent" : "Mozilla/5.0 (X11; Linux x86_64; rv:42.0) Gecko/20100101 Firefox/42.0"
                 },
                 "-device_2_2" : {
-                    "version" : {
+                    "sdk" : {
                         "reach": "ios_1.0.1",
                         "webcom": "ios_1.1.1"
                     },
@@ -94,6 +94,12 @@
         },
         "rooms": {
             "-room_1" : {
+				"meta": {
+		            "_created" : 1452878204505,
+		            "name" : "room 1",
+		            "owner" : "simplelogin:1",
+		            "status" : "OPENED"
+		        },
                 "participants": {
                     "simplelogin:1" : {
                         "_joined" : 1452878204505,
@@ -136,6 +142,12 @@
                 }
             },
             "-room_2" : {
+				"meta" : {
+		            "_created" : 1452878309671,
+		            "name" : "room 2",
+		            "owner" : "simplelogin:1",
+		            "status" : "OPENED"
+		        },
                 "participants": {
                     "simplelogin:1" : {
                         "_joined" : 1452878309671,
@@ -145,6 +157,12 @@
                 }
             },
             "-room_3" : {
+				"meta" : {
+		            "_created" : 1452878309671,
+		            "name" : "room 3",
+		            "owner" : "simplelogin:2",
+		            "status" : "OPENED"
+		        },
                 "participants": {
                     "simplelogin:1" : {
                         "_joined" : 1452878309862,
