@@ -45,7 +45,7 @@
                         "properties": {
 							"meta": {
 								"description": "Copy of /rooms/**$roomId** to simplify security rules",
-								"$ref": "Room.json"
+								"$ref": "RoomMeta.json"
 							},
                             "participants": {
                                 "type": "array",
@@ -93,11 +93,16 @@
                                 "type": "boolean",
                                 "description": "Peer's **$userId** (for security purposes)"
                             },
-                            "connections": {
-                                "type": "array",
-                                "description": "List of actual PeerConnections between the two devices.\n\n---\nEach connection is identified by its **$PeerCoId** (/_/webrtc/**$peer1_deviceId**-**$peer2_deviceId**/connections/**$peerCoId**/*&lt;PeerConnection&gt;*)",
-                                "items": {
-                                    "$ref": "PeerConnection.json"
+                            "$streamId": {
+                                "type": "object",
+                                "description": "SDP exchange between 2 devices for a single stream / PeerConnection",
+                                "properties": {
+                                    "$peer1_deviceId": {
+										"$ref": "SDP.json"
+									},
+									"$peer2_deviceId": {
+										"$ref": "SDP.json"
+									}
                                 }
                             }
                         }

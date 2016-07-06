@@ -1,6 +1,0 @@
-{
-  "id": "PeerCoId",
-  "$schema": "https://webcom-components.github.io/reach-schema/draft-00/PeerCoId.json",
-  "description": "&lt;PeerConnection&gt;'s id. It's a push id (/_/webrtc/**$peer1_deviceId**-**$peer2_deviceId**/connections/**$peerCoId**/*&lt;PeerConnection&gt;*)",
-  "type": "string"
-}

@@ -3,15 +3,19 @@
   "$schema": "https://webcom-components.github.io/reach-schema/draft-00/ICEServer.json",
   "description": "ICE server configuration",
   "properties": {
-    "url": {
+    "urls": {
+		"anyOf": [
+			{"type": "array", "items": {"type": "string"}},
+			{"type": "string"}
+		]
+
+    },
+    "username": {
       "type": "string"
     },
-    "user": {
-      "type": "string"
-    },
-    "pwd": {
+    "credential": {
       "type": "string"
     }
   },
-  "required": ["url"]
+  "required": ["urls"]
 }

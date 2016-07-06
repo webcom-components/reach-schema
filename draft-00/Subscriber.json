@@ -7,10 +7,6 @@
             "description": "The &lt;Subscriber&gt;'s user id",
             "$ref": "UserId.json"
         },
-        "pc": {
-            "description": "The PeerConnection id",
-            "$ref": "PeerCoId.json"
-        },
         "_created": {
             "description": "The subscription timestamp",
             "type": "number"

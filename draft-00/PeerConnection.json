@@ -1,9 +1,0 @@
-{
-  "id": "PeerConnection",
-  "$schema": "https://webcom-components.github.io/reach-schema/draft-00/PeerConnection.json",
-  "description": "The PeerConnection. (/_/webrtc/**$peer1_deviceId**-**$peer2_deviceId**/connections/**$peerCoId**/). \n\n---\nThere should be 2 &lt;PeerConnectionDevice&gt;, one for each device, identified by their **$deviceId**:\n- /_/webrtc/**$peer1_deviceId**-**$peer2_deviceId**/connections/**$peerCoId**/**$peer1_deviceId**/*&lt;PeerConnectionDevice&gt;*\n- /_/webrtc/**$peer1_deviceId**-**$peer2_deviceId**/connections/**$peerCoId**/**$peer2_deviceId**/*&lt;PeerConnectionDevice&gt;*",
-  "type": "array",
-  "items": {
-      "$ref": "PeerConnectionDevice.json"
-  }
-}

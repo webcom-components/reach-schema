@@ -116,14 +116,7 @@
                     "-stream_1_1" : {
                         "from" : "simplelogin:1",
                         "device" : "-device_1_1",
-                        "type" : "audio-video",
-                        "subscribers": {
-                            "-device_2_1": {
-                                "to": "simplelogin:2",
-                                "pc": "-pc_1",
-                                "_created": 1452878309862
-                            }
-                        }
+                        "type" : "audio-video"
                     },
                     "-stream_1_2" : {
                         "from" : "simplelogin:2",
@@ -135,7 +128,6 @@
                     "-stream_1_1" : {
                         "-device_2_1": {
                             "to": "simplelogin:2",
-                            "pc": "-pc_1",
                             "_created": 1452878309862
                         }
                     }
@@ -201,26 +193,22 @@
                     "-stream_3_1" : {
                         "-device_2_2": {
                             "to": "simplelogin:2",
-                            "pc": "-pc_2",
                             "_created": 1452878309862
                         }
                     },
                     "-stream_3_2" : {
                         "-device_1_1": {
                             "to": "simplelogin:1",
-                            "pc": "-pc_3",
                             "_created": 1452878309862
                         },
                         "-device_3_2": {
                             "to": "simplelogin:3",
-                            "pc": "-pc_4",
                             "_created": 1452878309862
                         }
                     },
                     "-stream_3_3" : {
                         "-device_1_1": {
                             "to": "simplelogin:1",
-                            "pc": "-pc_5",
                             "_created": 1452878309862
                         }
                     }
@@ -243,14 +231,18 @@
             "-device_1_1--device_2_1": {
                 "simplelogin:1": true,
                 "simplelogin:2": true,
-                "connections": {
-                    "-pc_1": {
-                        "-device_1_1": {
-                            "offer": "sdp offer"
-                        },
-                        "-device_2_1": {
-                            "answer": "sdp answer"
-                        }
+                "-stream_1_1": {
+                    "-device_1_1": {
+						"sdp": {
+							"type": "offer",
+							"sdp": "sdp offer"
+						}
+                    },
+                    "-device_2_1": {
+						"sdp": {
+							"type": "answer",
+							"sdp": "sdp answer"
+						}
                     }
                 }
             },
@@ -258,28 +250,40 @@
                 "simplelogin:1": true,
                 "simplelogin:2": true,
                 "connections": {
-                    "-pc_2": {
+                    "-stream_3_1": {
                         "-device_1_1": {
-                            "offer": "sdp offer"
+							"sdp": {
+								"type": "offer",
+								"sdp": "sdp offer"
+							}
                         },
                         "-device_2_2": {
-                            "answer": "sdp answer"
+							"sdp": {
+								"type": "answer",
+								"sdp": "sdp answer"
+							}
                         }
                     },
                     "-pc_3": {
                         "-device_2_2": {
-                            "offer": "sdp offer"
+							"sdp": {
+								"type": "offer",
+								"sdp": "sdp offer"
+							}
                         },
                         "-device_1_1": {
-                            "answer": "sdp answer"
+							"sdp": {
+								"type": "answer",
+								"sdp": "sdp answer"
+							}
                         }
                     }
                 }
             }
         },
         "ice": [
-            {"url": "ice1.webcom.io"},
-            {"url": "ice2.webcom.io"}
+            {"urls": "ice1.webcom.io"},
+            {"urls": "ice2.webcom.io"}
         ]
     }
 }

@@ -1,0 +1,23 @@
+{
+  "id": "SDP",
+  "$schema": "https://webcom-components.github.io/reach-schema/draft-00/SDP.json",
+  "description": "The SDP exchange for a device. (/_webrtc/**$user1DeviceId**-**$user2DeviceId**/**$streamId**/**$deviceId**/).",
+  "properties": {
+	"sdp": {
+		"description": "Device's Session description. (see [RTCSessionDescription](https://w3c.github.io/webrtc-pc/#rtcsessiondescription-class))",
+		"type": "object",
+		"properties": {
+			"type": {
+				"enum": ["offer", "answer"]
+			},
+			"sdp": {
+				"type": "string"
+			}
+		}
+	},
+    "ice": {
+      "type": "array",
+      "items": {"$ref": "ICECandidate.json"}
+    }
+  }
+}
