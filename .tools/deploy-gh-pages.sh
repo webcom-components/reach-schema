@@ -21,7 +21,7 @@ find out/ -type f -name "test-*" -exec rm -f {} \;
 # Copy README & LICENSE
 cp README.md LICENSE out/
 # Generate index
-./node_modules/.bin/babel-node ./.tools/index-generate.js
+node ./.tools/index-generate.js
 
 cd out
 git init

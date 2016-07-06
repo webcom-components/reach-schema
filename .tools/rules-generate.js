@@ -1,7 +1,9 @@
 #!/usr/bin/env node
 
-import {extract} from './utils/version';
-import {execSync} from 'child_process';
+require('babel-core/register');
+
+const extract = require('./utils/version').extract;
+const execSync = require('child_process').execSync;
 
 extract('rules').forEach((v) => {
 	execSync(`./node_modules/.bin/firebase-bolt < ${v}/security/rules.bolt > ${v}/security/rules.json`, {

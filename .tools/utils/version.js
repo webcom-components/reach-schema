@@ -2,7 +2,7 @@
 
 import {readdirSync, statSync} from 'fs';
 import {findLast, includes} from 'lodash/collection';
-import intersection from 'lodash/array/intersection';
+import {intersection} from 'lodash/array';
 import minimist from 'minimist';
 
 // List schema versions

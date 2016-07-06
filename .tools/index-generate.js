@@ -1,13 +1,15 @@
 #!/usr/bin/env node
 
-import {schemas, latestSchema} from './utils/version';
-import {template} from 'dot';
-import {readFileSync, writeFileSync, statSync} from 'fs';
+require('babel-core/register');
 
-if(statSync(`${__dirname}/../out`).isDirectory()) {
-	const tpl = template(readFileSync(`${__dirname}/index.dot`).toString());
-	writeFileSync(
+const version = require('./utils/version');
+const template = require('dot').template;
+const fs = require('fs');
+
+if(fs.statSync(`${__dirname}/../out`).isDirectory()) {
+	const tpl = template(fs.readFileSync(`${__dirname}/index.dot`).toString());
+	fs.writeFileSync(
 		`${__dirname}/../out/index.html`,
-		tpl({versions: schemas, latest: latestSchema})
+		tpl({versions: version.schemas, latest: version.latestSchema})
 	);
 }
