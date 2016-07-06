@@ -1,23 +1,26 @@
-
 import request from 'request';
 import Webcom from 'webcom';
 import uuid from 'uuid';
 import minimist from 'minimist';
-import range from 'lodash/utility/range';
-import find from 'lodash/collection/find';
+import range from 'lodash/range';
+import find from 'lodash/find';
+import credentials from '../credentials';
 
-// TODO add .webcomrc.yml | .webcomrc.json support for options ?
 const defaultOptions = {
-	server: 'https://webcom.orange.com',
+	server: `${credentials.WEBCOM_PROTOCOL}://${credentials.WEBCOM_DOMAIN}`,
 	log: false,
 	ns: uuid.v1()
 }
 
 // Parse args
 const config = minimist(process.argv.slice(2), {
-	boolean: ['log'],
+	boolean: ['log', 'proxy'],
 	default: defaultOptions
 });
+
+const proxy = config.proxy ? (process.env.PROXY ||
+		process.env.HTTPS_PROXY || process.env.https_proxy ||
+		process.env.HTTP_PROXY || process.env.http_proxy || null) : null;
 
 // Created users
 const simplelogin = {};
@@ -28,10 +31,6 @@ if(!config.log) {
 	console.warn = () => {};
 }
 
-// Auth token
-//	Generate a JWT using the namespace's secret & npm run jwt
-const admin_jwt = process.env.WEBCOM_JWT;
-
 /**
  * Get webcom server version
  * @return Promise
@@ -41,7 +40,7 @@ const serverVersion = () => new Promise((resolve, reject) => {
 	process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0';
 	request({
 		url: `${config.server}/version/v.json`,
-		proxy: config.proxy
+		proxy
 	}, (err, header, body) => {
 		if(err) {
 			reject(err);
@@ -51,6 +50,43 @@ const serverVersion = () => new Promise((resolve, reject) => {
 		}
 	});
 });
+
+/**
+ * Authenticate
+ */
+export const login = () => {
+	const accounts = new Webcom(`${config.server}/base/accounts`);
+
+	let auth;
+
+	if(config && config.authToken) {
+		auth = Promise.resolve({token: config.authToken});
+	} else if(credentials.WEBCOM_TOKEN) {
+		auth = new Promise((resolve, reject) => {
+			accounts.auth(credentials.WEBCOM_TOKEN, (error, a) => {
+				if(error) {
+					reject(error);
+				}
+				resolve({token: a ? credentials.WEBCOM_TOKEN : config.authToken});
+			}, reject);
+		});
+	} else if(credentials.WEBCOM_EMAIL && credentials.WEBCOM_PASSWORD) {
+		auth = accounts.authWithPassword({
+			email: credentials.WEBCOM_EMAIL,
+			password: credentials.WEBCOM_PASSWORD,
+			rememberMe: true
+		}).then(a => {
+			return a ? {token: (a.token || a.authToken|| a.webcomAuthToken)} : a;
+		});
+	} else {
+		auth = Promise.reject(new Error('No credentials'));
+	}
+
+	return auth.then(a => {
+		config.authToken = a.token;
+		return a;
+	});
+};
 
 /**
  * Create a namespace.
@@ -129,10 +165,11 @@ const createUser = (email, namespace = config.ns) => new Promise((resolve, rejec
 			reject(err);
 			return console.error(err);
 		}
-		simplelogin[authData.id] = {
+		const id = Object.keys(simplelogin).length;
+		simplelogin[id] = {
 			token: authData.token,
 			uid: authData.uid,
-			id: authData.id,
+			id,
 			email
 		};
 		resolve(authData);
@@ -290,14 +327,14 @@ const logout = (namespace = config.ns) => new Promise(
  */
 export const initNamespace = (rules, namespace = config.ns, nbUser = 5) => done => {
 	console.info(`\n  \u2622 ${namespace}\n`);
-	auth(admin_jwt, 'accounts')
+	login()
 		.then(() => {
 			console.warn('auth success');
-			return createNamespace(admin_jwt, namespace);
+			return createNamespace(config.authToken, namespace);
 		})
 		.then(() => {
 			console.warn(`namespace ${namespace} created`);
-			return adminToken(admin_jwt, namespace)
+			return adminToken(config.authToken, namespace)
 		})
 		.then((token) => {
 			console.warn(`admin token for namespace ${namespace} ok`);
@@ -328,7 +365,7 @@ export const initNamespace = (rules, namespace = config.ns, nbUser = 5) => done 
 export const destroyNamespace = (namespace = config.ns) => done => {
 	const users = Object.keys(simplelogin).map(id => deleteUser(simplelogin[id].email, namespace));
 	Promise.all(users)
-		.then(() => deleteNamespace(admin_jwt, namespace))
+		.then(() => deleteNamespace(config.authToken, namespace))
 		.then(() => done())
 		.catch(done);
 };
@@ -340,9 +377,13 @@ export const destroyNamespace = (namespace = config.ns) => done => {
  * @return Function
  */
 export const resetNamespace = (data, namespace = config.ns) => done => {
-	adminToken(admin_jwt, namespace)
+	let d = JSON.stringify(data);
+	Object.keys(simplelogin).forEach(k => {
+		d = d.replace(new RegExp(`simplelogin:${k}`, 'g'), simplelogin[k].uid);
+	});
+	adminToken(config.authToken, namespace)
 		.then((token) => auth(token, namespace))
-		.then(() => set('', data, namespace))
+		.then(() => set('', JSON.parse(d), namespace))
 		.then(() => done())
 		.catch(done);
 };
@@ -456,5 +497,5 @@ export const plugin = (chai, utils) => {
 export const users = {
 	unauthenticated: false,
 	authenticated: true,
-	password: (id) => id ? simplelogin[id] : authenticated
+	password: id => id ? simplelogin[id] : authenticated
 };

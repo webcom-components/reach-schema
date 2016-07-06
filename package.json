@@ -6,7 +6,7 @@
     "schema": "./node_modules/.bin/browser-sync start --server --files \"./$VERSION/*.json\" --startPath bower_components/docson/#/../../$VERSION/schema.json",
     "rules": "./node_modules/.bin/firebase-bolt < ./$VERSION/security/rules.bolt > ./$VERSION/security/rules.json",
     "test": "./node_modules/.bin/mocha --compilers js:babel-register --timeout 5000 --reporter mochawesome --reporter-options reportDir=./$VERSION/security/report,reportName=index,reportTitle='Security Rules Tests',inlineAssets=true ./$VERSION/security/test-specs.js",
-    "jwt": "./node_modules/.bin/babel-node .tools/token.js"
+    "jwt": "node .tools/jwt.js"
   },
   "repository": {
     "type": "git",
@@ -15,22 +15,25 @@
   "author": "Webcom <webcom.ops@orange.com>",
   "license": "MIT",
   "devDependencies": {
-    "babel-cli": "^6.5.1",
-    "babel-preset-es2015": "^6.5.0",
-    "babel-register": "^6.5.1",
-    "browser-sync": "^2.11.1",
+    "babel-cli": "^6.10.1",
+    "babel-preset-es2015": "^6.9.0",
+    "babel-register": "^6.9.0",
+    "browser-sync": "^2.13.0",
     "chai": "^3.5.0",
+    "colors": "^1.1.2",
     "dot": "^1.0.3",
-    "eslint": "^1.10.3",
+    "eslint": "^2.13.1",
     "firebase-bolt": "^0.7.1",
-    "jsonwebtoken": "^5.5.4",
-    "lodash": "^3.10.1",
+    "inquirer": "^1.1.1",
+    "js-yaml": "^3.6.1",
+    "jsonwebtoken": "^7.0.1",
+    "lodash": "^4.13.1",
     "minimist": "^1.2.0",
-    "mocha": "^2.4.5",
-    "mochawesome": "^1.3.0",
-    "moment": "^2.11.2",
-    "request": "^2.69.0",
-    "uuid": "^2.0.1",
-    "webcom": "^0.2.3"
+    "mocha": "^2.5.3",
+    "mochawesome": "^1.3.5",
+    "moment": "^2.14.1",
+    "request": "^2.72.0",
+    "uuid": "^2.0.2",
+    "webcom": "^1.0.1"
   }
 }
