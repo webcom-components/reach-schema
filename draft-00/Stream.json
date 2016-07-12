@@ -4,21 +4,28 @@
   "description": "Published stream. The stream id is the path's name (/rooms/__$roomId__/streams/__$streamId__/)",
   "properties": {
     "from": {
-      "description": "The __$userId__ of the participant publishing this stream",
-      "$ref": "UserId.json"
+		"description": "The __$userId__ of the participant publishing this stream",
+		"$ref": "UserId.json"
     },
     "device": {
-      "description": "The __$deviceId__ of the device used to publish this stream",
-      "$ref": "DeviceId.json"
+		"description": "The __$deviceId__ of the device used to publish this stream",
+		"$ref": "DeviceId.json"
     },
     "type": {
-        "description": "The type of stream",
-      "enum": ["audio", "video", "audio-video", "chat"]
+		"description": "The type of stream",
+		"enum": ["audio", "video", "audio-video", "chat"]
+    },
+	"muted": {
+		"description": "The mute status of this stream",
+		"type": "object",
+		"properties": {
+			"audio": {
+				"type": "boolean"
+			},
+			"video": {
+				"type": "boolean"
+			}
+		}
     }
-  },
-  "required": [
-    "from",
-    "device",
-    "type"
-  ]
+  }
 }
