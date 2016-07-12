@@ -154,7 +154,7 @@ describe('DRAFT-00', function() {// eslint-disable-line
 		it('A user can list his invites', done => {
 			chai.expect(users.password(2)).can.read.path(`/_/invites/${users.password(2).uid}`, done);
 		});
-		xit('A user cannot list another user invites', done => {
+		it('A user cannot list another user invites', done => {
 			chai.expect(users.password(3)).cannot.read.path(`/_/invites/${users.password(2).uid}`, done);
 		});
 
@@ -162,7 +162,7 @@ describe('DRAFT-00', function() {// eslint-disable-line
 		it('A user can read an invite he sent', done => {
 			chai.expect(users.password(3)).can.read.path(`/_/invites/${users.password(2).uid}/-invite-3`, done);
 		});
-		xit('A user cannot read an invite he did not send', done => {
+		it('A user cannot read an invite he did not send', done => {
 			chai.expect(users.password(1)).cannot.read.path(`/_/invites/${users.password(2).uid}/-invite-3`, done);
 		});
 
@@ -295,7 +295,8 @@ describe('DRAFT-00', function() {// eslint-disable-line
 			chai.expect(users.password(3)).can.push({
 				from : users.password(3).uid,
 				device : '-device_3_1',
-				type : 'audio'
+				type : 'audio',
+				muted: {audio: false, video: false}
 			}).path('_/rooms/-room_3/streams', done);
 		});
 
@@ -418,8 +419,7 @@ describe('DRAFT-00', function() {// eslint-disable-line
 		it('Anonymous users cannot add a PeerConnection', done => {
 			chai.expect(users.unauthenticated).cannot.set(pcData).path('_/webrtc/-device_1_1--device_2_2/-stream_1_2', done);
 		});
-		xit('Authenticated users cannot add another User\'s PeerConnection', done => {
-			// TODO Test with new server version (empty error instead of premission_denied with v1.11)
+		it('Authenticated users cannot add another User\'s PeerConnection', done => {
 			chai.expect(users.authenticated).cannot.set(pcData).path('_/webrtc/-device_1_1--device_2_2/-stream_1_2', done);
 		});
 		it('Authenticated users can create a new PeerConnections', done => {
