@@ -226,6 +226,9 @@ describe('DRAFT-00', function() {// eslint-disable-line
 		it('Moderator can add a new participant', done => {
 			chai.expect(users.password(1)).can.update(participantData()).path(`_/rooms/-room_3/participants/${users.password(5).uid}`, done);
 		});
+		it('Any connected User can join an open room', done => {
+			chai.expect(users.password(1)).can.set(participantData()).path(`_/rooms/-room_4/participants/${users.password(1).uid}`, done);
+		});
 
 		// Udpate participant infos (join, role)
 		it('Participant can change its status', done => {

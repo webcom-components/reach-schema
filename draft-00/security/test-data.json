@@ -29,6 +29,13 @@
             "name" : "room 3",
             "owner" : "simplelogin:2",
             "status" : "OPENED"
+        },
+        "-room_4" : {
+            "_created" : 1452878309862,
+			"_public": true,
+            "name" : "room 4",
+            "owner" : "simplelogin:2",
+            "status" : "OPENED"
         }
     },
     "_": {
@@ -225,7 +232,23 @@
                         "_created": 1452878309862
                     }
                 }
-            }
+            },
+			"-room_4" : {
+				"meta" : {
+		            "_created" : 1452878309671,
+					"_public" : true,
+		            "name" : "room 4",
+		            "owner" : "simplelogin:2",
+		            "status" : "OPENED"
+		        },
+                "participants": {
+                    "simplelogin:2" : {
+                        "_joined" : 1452878309862,
+                        "role" : "OWNER",
+                        "status" : "CONNECTED"
+                    }
+				}
+			}
         },
         "webrtc": {
             "-device_1_1--device_2_1": {

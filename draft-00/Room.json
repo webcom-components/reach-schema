@@ -16,6 +16,10 @@
         "CLOSED"
       ]
     },
+	"_public": {
+		"description": "Can any authenticated user join the Room or only invited ones",
+		"type": "boolean"
+	},
     "_created": {
       "description": "The room creation timestamp",
       "type": "number"

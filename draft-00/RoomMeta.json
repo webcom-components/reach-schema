@@ -9,6 +9,10 @@
     "owner": {
       "description": "Name of the owner path in */users*",
       "type": "string"
-    }
+    },
+	"_public": {
+		"description": "Can any authenticated user join the Room or only invited ones",
+		"type": "boolean"
+	}
   }
 }
