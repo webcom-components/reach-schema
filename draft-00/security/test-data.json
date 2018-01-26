@@ -3,12 +3,14 @@
         "simplelogin:1" : {
             "lastSeen" : 1452879266889,
             "name" : "user1",
-            "status" : "CONNECTED"
+            "status" : "CONNECTED",
+            "provider" : "anonymous"
         },
         "simplelogin:2" : {
             "lastSeen" : 1453111249659,
             "name" : "user2",
-            "status" : "CONNECTED"
+            "status" : "CONNECTED",
+            "provider" : "password"
         }
     },
     "rooms" : {

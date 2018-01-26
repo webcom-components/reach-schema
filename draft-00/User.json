@@ -14,6 +14,10 @@
     "lastSeen": {
       "description": "Last seen timestamp. Can be used for cleaning purposes. Replaces 'wasInsideReach'.",
       "type": "number"
+    },
+    "provider": {
+      "description": "User provider. The method used to log in: password, anonymous, ...'.",
+      "type": "string"
     }
   }
 }

@@ -14,6 +14,7 @@ type User extends Extra {
     name: Null | String
     status: Null | String
     lastSeen: Null | Number
+    provider: Null | String
 }
 
 type Device {
