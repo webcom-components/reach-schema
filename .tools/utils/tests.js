@@ -55,8 +55,6 @@ const serverVersion = () => new Promise((resolve, reject) => {
  * Authenticate
  */
 export const login = () => {
-	console.log(`server`);
-	console.log(config);
 	const accounts = new Webcom(`${config.server}/base/accounts`);
 
 	let auth;
@@ -64,7 +62,6 @@ export const login = () => {
 	if(config && config.authToken) {
 		auth = Promise.resolve({token: config.authToken});
 	} else if(credentials.WEBCOM_TOKEN) {
-		console.log(`on essaie de se loguer avec token`);
 		auth = new Promise((resolve, reject) => {
 			accounts.auth(credentials.WEBCOM_TOKEN, (error, a) => {
 				if(error) {
@@ -74,13 +71,11 @@ export const login = () => {
 			}, reject);
 		});
 	} else if(credentials.WEBCOM_EMAIL && credentials.WEBCOM_PASSWORD) {
-		console.log(`on essaie de se loguer avec email password`);
 		auth = accounts.authWithPassword({
 			email: credentials.WEBCOM_EMAIL,
 			password: credentials.WEBCOM_PASSWORD
 			// rememberMe: true
 		}).then(a => {
-			console.log(`on a réussi l'authent`);
 			return a ? {token: (a.token || a.authToken|| a.webcomAuthToken)} : a;
 		}).catch(e =>
 			console.error(e)
@@ -383,34 +378,34 @@ export const initNamespace = (rules, namespace = config.ns, nbUser = 5) => done 
 	console.info(`\n  \u2622 ${namespace}\n`);
 	login()
 		.then(() => {
-			console.log('auth success');
+			console.warn('auth success');
 			return createNamespace(config.authToken, namespace);
 		})
 		.then(() => {
-			console.log(`namespace ${namespace} created`);
+			console.warn(`namespace ${namespace} created`);
 			return sessionToken();
 		})
 		.then((token) => {
 			config.sessionToken = token;
-			console.log(`session token ${token} ok`);
+			console.warn(`session token ${token} ok`);
 			return adminToken(token, namespace);
 		})
 		.then((token) => {
 			config.adminToken = token;
-			console.log(`admin token for namespace ${namespace} ok`);
+			console.warn(`admin token for namespace ${namespace} ok`);
 			return putRules(token, rules, namespace);
 		})
 		.then(() => {
-			console.log(`rules set for namespace ${namespace}`);
+			console.warn(`rules set for namespace ${namespace}`);
 			const users = range(1, nbUser + 1).map(id => createUser(`user${id}@reach.io`, namespace));
 			return Promise.all(users);
 		})
 		.then(() => {
-			console.log(`users created for namespace ${namespace}`);
+			console.warn(`users created for namespace ${namespace}`);
 			return createUser('user.authenticated@reach.io', namespace);
 		})
 		.then(() => {
-			console.log(`default authenticated user created for namespace ${namespace}`);
+			console.warn(`default authenticated user created for namespace ${namespace}`);
 			authenticated = find(simplelogin, {email: 'user.authenticated@reach.io'});
 			done();
 		})
