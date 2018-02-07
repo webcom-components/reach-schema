@@ -53,9 +53,11 @@ const credentials = Object.assign(fromEnv, fromFile);
 // Default values
 if(!credentials.WEBCOM_DOMAIN || !/^[a-z:0-9\.]+$/.test(credentials.WEBCOM_DOMAIN)) {
 	credentials.WEBCOM_DOMAIN = 'io.datasync.orange.com';
+	// credentials.WEBCOM_DOMAIN = 'brehat-hp.rd.francetelecom.fr:8000';
 }
 if(!credentials.WEBCOM_PROTOCOL || !/^https?$/.test(credentials.WEBCOM_PROTOCOL)) {
 	credentials.WEBCOM_PROTOCOL = 'https';
+	// credentials.WEBCOM_PROTOCOL = 'http';
 }
 confValues.forEach(confValue => credentials[confValue] = credentials[confValue] || null);
 // Encloses strings for webpack globals

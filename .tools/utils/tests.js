@@ -55,6 +55,8 @@ const serverVersion = () => new Promise((resolve, reject) => {
  * Authenticate
  */
 export const login = () => {
+	console.log(`server`);
+	console.log(config);
 	const accounts = new Webcom(`${config.server}/base/accounts`);
 
 	let auth;
@@ -62,6 +64,7 @@ export const login = () => {
 	if(config && config.authToken) {
 		auth = Promise.resolve({token: config.authToken});
 	} else if(credentials.WEBCOM_TOKEN) {
+		console.log(`on essaie de se loguer avec token`);
 		auth = new Promise((resolve, reject) => {
 			accounts.auth(credentials.WEBCOM_TOKEN, (error, a) => {
 				if(error) {
@@ -71,13 +74,17 @@ export const login = () => {
 			}, reject);
 		});
 	} else if(credentials.WEBCOM_EMAIL && credentials.WEBCOM_PASSWORD) {
+		console.log(`on essaie de se loguer avec email password`);
 		auth = accounts.authWithPassword({
 			email: credentials.WEBCOM_EMAIL,
 			password: credentials.WEBCOM_PASSWORD
 			// rememberMe: true
 		}).then(a => {
+			console.log(`on a réussi l'authent`);
 			return a ? {token: (a.token || a.authToken|| a.webcomAuthToken)} : a;
-		});
+		}).catch(e =>
+			console.error(e)
+		);
 	} else {
 		auth = Promise.reject(new Error('No credentials'));
 	}
