@@ -73,8 +73,8 @@ export const login = () => {
 	} else if(credentials.WEBCOM_EMAIL && credentials.WEBCOM_PASSWORD) {
 		auth = accounts.authWithPassword({
 			email: credentials.WEBCOM_EMAIL,
-			password: credentials.WEBCOM_PASSWORD,
-			rememberMe: true
+			password: credentials.WEBCOM_PASSWORD
+			// rememberMe: true
 		}).then(a => {
 			return a ? {token: (a.token || a.authToken|| a.webcomAuthToken)} : a;
 		});
@@ -99,7 +99,7 @@ const createNamespace = (token, namespace = config.ns) => new Promise((resolve, 
 	request.post({
 		url: `${config.server}/admin/base/${namespace}`,
 		formData: {token},
-		proxy: config.proxy
+		// proxy: config.proxy
 	}, err => err ? reject(err) : resolve());
 });
 
@@ -111,15 +111,43 @@ const createNamespace = (token, namespace = config.ns) => new Promise((resolve, 
  * @return Promise
  */
 const deleteNamespace = (token, namespace = config.ns) => new Promise((resolve, reject) => {
+	console.log(`on va détruire le namesapce`);
+	console.log(namespace);
+	console.log(`${config.server}/admin/base/${namespace}?token=${token}&_method=DELETE`);
 	request.post({
 		url: `${config.server}/admin/base/${namespace}`,
 		formData: {
-			_method: 'DELETE',
-			namespace,
-			token
+			// namespace,
+			token,
+			_method: 'DELETE'
 		},
-		proxy: config.proxy
-	}, err => err ? reject(err) : resolve());
+		// proxy: config.proxy
+	//}, err => err ? reject(err) : resolve());
+	}, (err) => {
+		console.log(`on passe ici`);
+		if (err) {
+			console.error(err);
+			reject(err);
+			return console.error(err);
+		}
+		resolve();
+	});
+});
+
+/**
+ * Get the session token of a user.
+ * @return Promise
+ */
+const sessionToken = (token, namespace = config.ns) => new Promise((resolve, reject) => {
+	request.post({
+		url: `${config.server}/auth/v2/accounts/password/signin`,
+		formData: {
+				email: credentials.WEBCOM_EMAIL,
+				password: credentials.WEBCOM_PASSWORD
+			}
+	}, (err, header, body) => {
+		err ? reject(err) : resolve(JSON.parse(body).token);
+	});
 });
 
 /**
@@ -131,7 +159,7 @@ const deleteNamespace = (token, namespace = config.ns) => new Promise((resolve, 
 const adminToken = (token, namespace = config.ns) => new Promise((resolve, reject) => {
 	request({
 		url: `${config.server}/admin/base/${namespace}/token?token=${token}`,
-		proxy: config.proxy
+		// proxy: config.proxy
 	}, (err, header, body) => err ? reject(err) : resolve(JSON.parse(body).authToken));
 });
 
@@ -146,9 +174,9 @@ const putRules = (token, rulesToTest, namespace = config.ns) => new Promise((res
 		url: `${config.server}/base/${namespace}/.settings/rules.json?auth=${token}`,
 		method: 'PUT',
 		json: rulesToTest,
-		proxy: config.proxy
+		// proxy: config.proxy
 	}, (err, header, body) => {
-		const parseError = err || (body && body.error ? new Error(body.error) : false)
+		const parseError = err || (body && body.error ? new Error(body.error.message) : false);
 		parseError ? reject(parseError) : resolve();
 	});
 });
@@ -160,20 +188,39 @@ const putRules = (token, rulesToTest, namespace = config.ns) => new Promise((res
  * @return Promise
  */
 const createUser = (email, namespace = config.ns) => new Promise((resolve, reject) => {
-	(new Webcom(`${config.server}/base/${namespace}`, config.proxy)).createUser(email, 'password', (err, authData) => {
-		if(err) {
-			reject(err);
-			return console.error(err);
-		}
-		const id = Object.keys(simplelogin).length;
-		simplelogin[id] = {
-			token: authData.token,
-			uid: authData.uid,
-			id,
-			email
-		};
-		resolve(authData);
-	});
+	request.post({
+			url: `${config.server}/admin/base/${namespace}/createConfirmedUser?auth=${config.adminToken}&email=${email}`,
+			formData: {
+					password: 'password'
+				}
+		}, (err, header, body) => {
+			if(err) {
+				reject(err);
+				return console.error(err);
+			}
+			const response = JSON.parse(body);
+			const id = Object.keys(simplelogin).length;
+				simplelogin[id] = {
+					uid: response.uid,
+					id,
+					email
+			};
+			request.post({
+					url: `${config.server}/auth/v2/${namespace}/password/signin`,
+					formData: {
+							email: email,
+							password: 'password'
+						}
+				}, (err, header, body) => {
+					if(err) {
+						reject(err);
+						return console.error(err);
+					}
+					const responseAuth = JSON.parse(body);
+					simplelogin[id].token = responseAuth.token;
+					resolve(body);
+			});
+		});
 });
 
 /**
@@ -334,9 +381,15 @@ export const initNamespace = (rules, namespace = config.ns, nbUser = 5) => done 
 		})
 		.then(() => {
 			console.warn(`namespace ${namespace} created`);
-			return adminToken(config.authToken, namespace)
+			return sessionToken();
 		})
 		.then((token) => {
+			config.sessionToken = token;
+			console.warn(`session token ${token} ok`);
+			return adminToken(token, namespace);
+		})
+		.then((token) => {
+			config.adminToken = token;
 			console.warn(`admin token for namespace ${namespace} ok`);
 			return putRules(token, rules, namespace);
 		})
@@ -351,7 +404,7 @@ export const initNamespace = (rules, namespace = config.ns, nbUser = 5) => done 
 		})
 		.then(() => {
 			console.warn(`default authenticated user created for namespace ${namespace}`);
-			authenticated = find(simplelogin, {email: 'user.authenticated@reach.io'})
+			authenticated = find(simplelogin, {email: 'user.authenticated@reach.io'});
 			done();
 		})
 		.catch(done);
@@ -364,8 +417,12 @@ export const initNamespace = (rules, namespace = config.ns, nbUser = 5) => done 
  */
 export const destroyNamespace = (namespace = config.ns) => done => {
 	const users = Object.keys(simplelogin).map(id => deleteUser(simplelogin[id].email, namespace));
+	console.log(`on va tout détruire`);
 	Promise.all(users)
-		.then(() => deleteNamespace(config.authToken, namespace))
+		.then(() => {
+			console.log(`on a détruit les users`);
+			deleteNamespace(config.adminToken, namespace);
+		})
 		.then(() => done())
 		.catch(done);
 };
