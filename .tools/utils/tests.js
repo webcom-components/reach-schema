@@ -113,9 +113,6 @@ const createNamespace = (token, namespace = config.ns) => new Promise((resolve, 
  * @return Promise
  */
 const deleteNamespace = (token, namespace = config.ns) => new Promise((resolve, reject) => {
-	console.log(`on va détruire le namesapce`);
-	console.log(namespace);
-	console.log(`${config.server}/admin/base/${namespace}?token=${token}&_method=DELETE`);
 	request.post({
 		url: `${config.server}/admin/base/${namespace}`,
 		formData: {
@@ -126,7 +123,6 @@ const deleteNamespace = (token, namespace = config.ns) => new Promise((resolve, 
 		// proxy: config.proxy
 	//}, err => err ? reject(err) : resolve());
 	}, (err) => {
-		console.log(`on passe ici`);
 		if (err) {
 			console.error(err);
 			reject(err);
@@ -419,10 +415,8 @@ export const initNamespace = (rules, namespace = config.ns, nbUser = 5) => done 
  */
 export const destroyNamespace = (namespace = config.ns) => done => {
 	const users = Object.keys(simplelogin).map(id => deleteUser(simplelogin[id].email, namespace));
-	console.log(`on va tout détruire`);
 	Promise.all(users)
 		.then(() => {
-			console.log(`on a détruit les users`);
 			deleteNamespace(config.adminToken, namespace);
 		})
 		.then(() => done())
