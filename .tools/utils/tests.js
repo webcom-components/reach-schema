@@ -376,34 +376,34 @@ export const initNamespace = (rules, namespace = config.ns, nbUser = 5) => done 
 	console.info(`\n  \u2622 ${namespace}\n`);
 	login()
 		.then(() => {
-			console.warn('auth success');
+			console.log('auth success');
 			return createNamespace(config.authToken, namespace);
 		})
 		.then(() => {
-			console.warn(`namespace ${namespace} created`);
+			console.log(`namespace ${namespace} created`);
 			return sessionToken();
 		})
 		.then((token) => {
 			config.sessionToken = token;
-			console.warn(`session token ${token} ok`);
+			console.log(`session token ${token} ok`);
 			return adminToken(token, namespace);
 		})
 		.then((token) => {
 			config.adminToken = token;
-			console.warn(`admin token for namespace ${namespace} ok`);
+			console.log(`admin token for namespace ${namespace} ok`);
 			return putRules(token, rules, namespace);
 		})
 		.then(() => {
-			console.warn(`rules set for namespace ${namespace}`);
+			console.log(`rules set for namespace ${namespace}`);
 			const users = range(1, nbUser + 1).map(id => createUser(`user${id}@reach.io`, namespace));
 			return Promise.all(users);
 		})
 		.then(() => {
-			console.warn(`users created for namespace ${namespace}`);
+			console.log(`users created for namespace ${namespace}`);
 			return createUser('user.authenticated@reach.io', namespace);
 		})
 		.then(() => {
-			console.warn(`default authenticated user created for namespace ${namespace}`);
+			console.log(`default authenticated user created for namespace ${namespace}`);
 			authenticated = find(simplelogin, {email: 'user.authenticated@reach.io'});
 			done();
 		})
