@@ -1,6 +1,8 @@
 language: node_js
 node_js:
   - "stable"
+before_install:
+  - "export TRAVIS_COMMIT_MSG=\"$(git log --format=%B --no-merges -n 1)\""
 before_script:
   - npm install -g bower
   - bower install
