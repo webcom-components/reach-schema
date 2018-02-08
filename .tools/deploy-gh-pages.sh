@@ -25,8 +25,10 @@ node ./.tools/index-generate.js
 
 cd out
 git init
-git config user.name "webcomOps"
-git config user.email "webcom.ops@orange.com"
+#git config user.name "webcomOps"
+#git config user.email "webcom.ops@orange.com"
+git config user.name "flbbzh"
+git config user.email "franck.lebris@orange.com"
 git add .
 git commit -m "Deploy to GitHub Pages"
 echo "https://${GH_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git"
