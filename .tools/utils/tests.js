@@ -1,3 +1,5 @@
+import XMLHttpRequest from 'xmlhttprequest';
+import FormData from 'form-data';
 import request from 'request';
 import Webcom from 'webcom';
 import uuid from 'uuid';
@@ -113,23 +115,62 @@ const createNamespace = (token, namespace = config.ns) => new Promise((resolve, 
  * @return Promise
  */
 const deleteNamespace = (token, namespace = config.ns) => new Promise((resolve, reject) => {
+	const
+		req = new XMLHttpRequest(),
+		formData = new FormData();
+	req.onreadystatechange = () => {
+		console.log(`on a la réponse`);
+		if (req.readyState === 4) {
+			if(req.status === 200) {
+				log.g('info', 'Removed 1 namespace', [namespace]);
+				resolve(namespace);
+			} else {
+				reject(req.status);
+			}
+		}
+	};
+	req.open('POST', `${config.server}/admin/base/${namespace}`);
+	formData.append('token', `${token}`);
+	// formData.append('token', token);
+	formData.append('_method', 'DELETE');
+	// formData.append('namespace', tempNamespace);
+	console.log(`on va lancer la reqêeute`);
+	req.send(formData);
+	console.log(`on a fait le send`);
+
+/*	console.log(`delete namespace`);
+	console.log(`${config.server}/admin/base/${namespace}`);
+	console.log(token);
 	request.post({
-		url: `${config.server}/admin/base/${namespace}`,
+		// url: `${config.server}/admin/base/${namespace}`,
+		url: `http://io.datasync.orange.com/admin/base/${namespace}`,
 		formData: {
-			// namespace,
 			token,
-			_method: 'DELETE'
-		},
+			'_method': 'DELETE'
+		}
 		// proxy: config.proxy
 	//}, err => err ? reject(err) : resolve());
-	}, (err) => {
+	}, (err, header, body) => {
+		console.log('body');
+		console.log(body);
+		console.log('header');
+		console.log(header);
 		if (err) {
 			console.error(err);
 			reject(err);
 			return console.error(err);
 		}
 		resolve();
+	})
+	.on('response', response => {
+		console.log('response');
+		console.log(response)
+	})
+	.on('error', error => {
+		console.log('erruer');
+		console.log(error)
 	});
+	console.log('on a envoyé le post');*/
 });
 
 /**
@@ -417,7 +458,7 @@ export const destroyNamespace = (namespace = config.ns) => done => {
 	const users = Object.keys(simplelogin).map(id => deleteUser(simplelogin[id].email, namespace));
 	Promise.all(users)
 		.then(() => {
-			deleteNamespace(config.adminToken, namespace);
+			deleteNamespace(config.authToken, namespace);
 		})
 		.then(() => done())
 		.catch(done);

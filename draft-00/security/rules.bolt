@@ -176,7 +176,9 @@ type StreamData {
     from: Null | String
     device: Null | String
     type: Null | StreamType
-	muted: Null | StreamMute
+    muted: Null | StreamMute
+    height: Null | Number
+    width: Null | Number
 }
 type StreamMute {
 	audio: Boolean
