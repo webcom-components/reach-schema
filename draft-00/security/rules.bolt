@@ -7,6 +7,16 @@ type Extra extends Object {
 }
 
 /**************************************
+* roomByName
+**************************************/
+
+// Only authenticated users can read/modify the roomByName list
+path /roomByName {
+  read() { auth != null }
+  write() { auth != null }
+}
+
+/**************************************
 * Users
 **************************************/
 
@@ -78,9 +88,10 @@ path /rooms/{roomId} is Room {
 	update() { auth != null && prior(this).owner == auth.uid }
 	delete() { auth != null && prior(this).owner == auth.uid }
 }
-// Only participants can read the private room data
+// Only participants can read/remove the private room data
 path /_/rooms/{roomId} {
-    read() { auth != null && (this.meta._public == true || this.participants[auth.uid] != null) }
+  read() { auth != null && (this.meta._public == true || this.participants[auth.uid] != null) }
+  write() { auth != null && (this.meta._public == true || this.participants[auth.uid] != null) }
 }
 // Only the owner can write the room meta
 path /_/rooms/{roomId}/meta is RoomMeta {
@@ -96,6 +107,7 @@ path /_/rooms/{roomId}/meta is RoomMeta {
 type Participant extends Extra {
     status: Null | String
     role: Null | Role
+    userAgent: Null | String
     _joined: Null | Number
 }
 
