@@ -1,0 +1,6 @@
+{
+  "id": "UserId",
+  "$schema": "https://webcom-components.github.io/reach-schema/draft-00/UserId.json",
+  "description": "&lt;User&gt;'s uid. It's the uid of the user in Webcom's auth db. (simplelogin:[0-9]+)",
+  "type": "string"
+}

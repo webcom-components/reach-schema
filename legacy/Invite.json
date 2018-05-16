@@ -1,0 +1,40 @@
+{
+  "id": "Invite",
+  "$schema": "https://webcom-components.github.io/reach-schema/legacy/Invite.json",
+  "description": "The invitation",
+  "properties": {
+    "from": {
+      "description": "Id of the sender as defined in '*reach/userList/__USER_ID__/*'",
+      "type": "string"
+    },
+    "room": {
+      "description": "Id of the room as defined in '*roomsList/__ROOM_ID__/*'",
+      "type": "string"
+    },
+    "status": {
+      "description": "The invitation status.",
+      "enum": [
+        "ONGOING",
+        "ACCEPTED",
+        "REJECTED",
+        "CANCELED"
+      ]
+    },
+    "timestamp_creation": {
+      "description": "The invitation creation timestamp",
+      "type": "number"
+    },
+    "timestamp_end": {
+      "description": "The invitation rejection/cancelation timestamp",
+      "type": "number"
+    },
+    "topic": {
+      "description": "The type of the stream",
+      "enum": ["audio", "video", "audio-video", "chat"]
+    }
+  },
+  "required": [
+    "from",
+    "room"
+  ]
+}

@@ -1,0 +1,321 @@
+{
+  "rules": {
+    "roomByName": {
+      ".read": "auth != null",
+      ".write": "auth != null"
+    },
+    "users": {
+      ".read": "auth != null",
+      "$userId": {
+        ".validate": "newData.hasChildren()",
+        "extra": {
+          ".validate": "true"
+        },
+        "$other": {
+          ".validate": "false"
+        },
+        "name": {
+          ".validate": "newData.isString()"
+        },
+        "status": {
+          ".validate": "newData.isString()"
+        },
+        "lastSeen": {
+          ".validate": "newData.isNumber()"
+        },
+        "provider": {
+          ".validate": "newData.isString()"
+        },
+        ".write": "auth != null && auth.uid == $userId"
+      }
+    },
+    "_": {
+      "devices": {
+        "$userId": {
+          "$key1": {
+            ".validate": "newData.hasChildren(['status', 'sdk'])",
+            "status": {
+              ".validate": "newData.isString() && (newData.val() == 'CONNECTED' || newData.val() == 'DISCONNECTED' || newData.val() == 'NOT_CONNECTED' || newData.val() == 'SLEEPING')"
+            },
+            "sdk": {
+              ".validate": "newData.hasChildren(['reach', 'webcom'])",
+              "reach": {
+                ".validate": "newData.isString()"
+              },
+              "webcom": {
+                ".validate": "newData.isString()"
+              },
+              "$other": {
+                ".validate": "false"
+              }
+            },
+            "os": {
+              ".validate": "newData.isString()"
+            },
+            "userAgent": {
+              ".validate": "newData.isString()"
+            },
+            "$other": {
+              ".validate": "false"
+            }
+          },
+          ".validate": "newData.hasChildren()",
+          ".read": "auth != null && auth.uid == $userId",
+          ".write": "auth != null && auth.uid == $userId"
+        }
+      },
+      "rooms": {
+        "$roomId": {
+          ".read": "auth != null && (data.child('meta').child('_public').val() == true || data.child('participants').child(auth.uid).val() != null)",
+          ".write": "auth != null && (newData.child('meta').child('_public').val() == true || newData.child('participants').child(auth.uid).val() != null)",
+          "meta": {
+            ".validate": "newData.hasChildren()",
+            "extra": {
+              ".validate": "true"
+            },
+            "$other": {
+              ".validate": "false"
+            },
+            "name": {
+              ".validate": "newData.isString()"
+            },
+            "owner": {
+              ".validate": "newData.isString()"
+            },
+            "_public": {
+              ".validate": "newData.isBoolean()"
+            },
+            ".write": "data.val() == null && auth != null && newData.child('owner').val() == auth.uid || data.val() != null && newData.val() != null && auth != null && data.child('owner').val() == auth.uid || data.val() != null && newData.val() == null && auth != null && data.child('owner').val() == auth.uid"
+          },
+          "participants": {
+            "$userId": {
+              ".validate": "newData.hasChildren()",
+              "extra": {
+                ".validate": "true"
+              },
+              "$other": {
+                ".validate": "false"
+              },
+              "status": {
+                ".validate": "newData.isString()"
+              },
+              "role": {
+                ".validate": "newData.isString() && (newData.val() == 'OWNER' || newData.val() == 'MODERATOR' || newData.val() == 'NONE')"
+              },
+              "userAgent": {
+                ".validate": "newData.isString()"
+              },
+              "_joined": {
+                ".validate": "newData.isNumber()"
+              },
+              ".write": "data.val() == null && auth != null && (data.parent().parent().child('meta').child('_public').val() == true && $userId == auth.uid || data.parent().parent().child('meta').child('owner').val() == auth.uid || data.parent().child(auth.uid).val() != null && data.parent().child(auth.uid).child('role').val() == 'MODERATOR') || data.val() != null && newData.val() != null && auth != null && ($userId == auth.uid && (newData.child('role').val() == null || newData.child('role').val() == data.child('role').val()) || data.parent().parent().child('meta').child('owner').val() == auth.uid || data.parent().child(auth.uid).val() != null && data.parent().child(auth.uid).child('role').val() == 'MODERATOR') || data.val() != null && newData.val() == null && auth != null && (auth.uid == $userId || data.parent().parent().child('meta').child('owner').val() == auth.uid || data.parent().child(auth.uid).val() != null && data.parent().child(auth.uid).child('role').val() == 'MODERATOR')"
+            }
+          },
+          "messages": {
+            "$msgId": {
+              ".validate": "newData.hasChildren(['from', 'text', '_created'])",
+              "from": {
+                ".validate": "newData.isString()"
+              },
+              "text": {
+                ".validate": "newData.isString()"
+              },
+              "_created": {
+                ".validate": "newData.isNumber()"
+              },
+              "_end": {
+                ".validate": "newData.isNumber()"
+              },
+              "$other": {
+                ".validate": "false"
+              },
+              ".write": "data.val() == null && auth != null && newData.child('from').val() == auth.uid && data.parent().parent().child('participants').child(auth.uid).val() != null || data.val() != null && newData.val() != null && auth != null && (data.child('from').val() == auth.uid || data.parent().parent().child('meta').child('owner').val() == auth.uid || data.parent().parent().child('participants').child(auth.uid).val() != null && data.parent().parent().child('participants').child(auth.uid).child('role').val() == 'MODERATOR') || data.val() != null && newData.val() == null && auth != null && (data.child('from').val() == auth.uid || data.parent().parent().child('meta').child('owner').val() == auth.uid || data.parent().parent().child('participants').child(auth.uid).val() != null && data.parent().parent().child('participants').child(auth.uid).child('role').val() == 'MODERATOR')"
+            }
+          },
+          "streams": {
+            "$streamId": {
+              ".validate": "newData.hasChildren()",
+              "from": {
+                ".validate": "newData.isString()"
+              },
+              "device": {
+                ".validate": "newData.isString()"
+              },
+              "type": {
+                ".validate": "newData.isString() && (newData.val() == 'audio' || newData.val() == 'video' || newData.val() == 'audio-video' || newData.val() == 'chat')"
+              },
+              "muted": {
+                ".validate": "newData.hasChildren() && newData.hasChildren(['audio', 'video'])",
+                "audio": {
+                  ".validate": "newData.isBoolean()"
+                },
+                "video": {
+                  ".validate": "newData.isBoolean()"
+                },
+                "$other": {
+                  ".validate": "false"
+                }
+              },
+              "height": {
+                ".validate": "newData.isNumber()"
+              },
+              "width": {
+                ".validate": "newData.isNumber()"
+              },
+              "$other": {
+                ".validate": "false"
+              },
+              ".write": "data.val() == null && auth != null && newData.child('from').val() == auth.uid && data.parent().parent().child('participants').child(auth.uid).val() != null || data.val() != null && newData.val() != null && auth != null && (data.child('from').val() == auth.uid || data.parent().parent().child('meta').child('owner').val() == auth.uid || data.parent().parent().child('participants').child(auth.uid).val() != null && data.parent().parent().child('participants').child(auth.uid).child('role').val() == 'MODERATOR') || data.val() != null && newData.val() == null && auth != null && (data.child('from').val() == auth.uid || data.parent().parent().child('meta').child('owner').val() == auth.uid || data.parent().parent().child('participants').child(auth.uid).val() != null && data.parent().parent().child('participants').child(auth.uid).child('role').val() == 'MODERATOR')"
+            }
+          },
+          "subscribers": {
+            "$streamId": {
+              ".write": "data.val() != null && newData.val() == null && auth != null && (data.parent().parent().child('streams').child($streamId).val() != null && data.parent().parent().child('streams').child($streamId).child('from').val() == auth.uid || data.parent().parent().child('meta').child('owner').val() == auth.uid || data.parent().parent().child('participants').child(auth.uid).val() != null && data.parent().parent().child('participants').child(auth.uid).child('role').val() == 'MODERATOR')",
+              "$deviceId": {
+                ".validate": "newData.hasChildren()",
+                "to": {
+                  ".validate": "newData.isString()"
+                },
+                "_created": {
+                  ".validate": "newData.isNumber()"
+                },
+                "$other": {
+                  ".validate": "false"
+                },
+                ".write": "data.val() == null && auth != null && newData.child('to').val() == auth.uid || data.val() != null && newData.val() != null && auth != null && data.child('to').val() == auth.uid || data.val() != null && newData.val() == null && auth != null && data.child('to').val() == auth.uid"
+              }
+            }
+          }
+        }
+      },
+      "invites": {
+        "$userId": {
+          ".read": "auth != null && auth.uid == $userId",
+          "$invitationId": {
+            ".validate": "newData.hasChildren()",
+            "from": {
+              ".validate": "newData.isString()"
+            },
+            "room": {
+              ".validate": "newData.isString()"
+            },
+            "status": {
+              ".validate": "newData.isString() && (newData.val() == 'ONGOING' || newData.val() == 'ACCEPTED' || newData.val() == 'REJECTED' || newData.val() == 'CANCELED')"
+            },
+            "topic": {
+              ".validate": "newData.isString()"
+            },
+            "_created": {
+              ".validate": "newData.isNumber()"
+            },
+            "_end": {
+              ".validate": "newData.isNumber()"
+            },
+            "$other": {
+              ".validate": "false"
+            },
+            ".write": "data.val() == null && auth != null && newData.child('from').val() == auth.uid || data.val() != null && newData.val() != null && auth != null && ($userId == auth.uid || data.child('from').val() == auth.uid) || data.val() != null && newData.val() == null && auth != null && $userId == auth.uid",
+            ".read": "auth != null && ($userId == auth.uid || data.child('from').val() == auth.uid)"
+          }
+        }
+      },
+      "webrtc": {
+        "$deviceIds": {
+          ".write": "data.val() == null && auth != null && newData.child(auth.uid).val() != null || data.val() != null && newData.val() != null && auth != null && data.child(auth.uid).val() != null || data.val() != null && newData.val() == null && auth != null && data.child(auth.uid).val() != null",
+          ".read": "auth != null && data.child(auth.uid).val() != null",
+          "$streamId": {
+            "$deviceId": {
+              ".validate": "newData.hasChildren()",
+              "sdp": {
+                ".validate": "newData.hasChildren() && newData.hasChildren(['type', 'sdp'])",
+                "type": {
+                  ".validate": "newData.isString()"
+                },
+                "sdp": {
+                  ".validate": "newData.isString()"
+                },
+                "$other": {
+                  ".validate": "false"
+                }
+              },
+              "ice": {
+                "$key2": {
+                  ".validate": "newData.hasChildren(['candidate', 'sdpMid', 'sdpMLineIndex'])",
+                  "candidate": {
+                    ".validate": "newData.isString()"
+                  },
+                  "sdpMid": {
+                    ".validate": "newData.isString()"
+                  },
+                  "sdpMLineIndex": {
+                    ".validate": "newData.isNumber()"
+                  },
+                  "$other": {
+                    ".validate": "false"
+                  }
+                },
+                ".validate": "newData.hasChildren()"
+              },
+              "$other": {
+                ".validate": "false"
+              }
+            }
+          }
+        }
+      },
+      "ice": {
+        "$key3": {
+          ".validate": "newData.hasChildren()",
+          "urls": {
+            ".validate": "newData.isString() || newData.hasChildren()",
+            "$key4": {
+              ".validate": "newData.isString()"
+            }
+          },
+          "user": {
+            ".validate": "newData.isString()"
+          },
+          "pwd": {
+            ".validate": "newData.isString()"
+          },
+          "$other": {
+            ".validate": "false"
+          }
+        },
+        ".validate": "newData.hasChildren()",
+        ".read": "true"
+      }
+    },
+    "rooms": {
+      ".read": "auth != null",
+      "$roomId": {
+        ".validate": "newData.hasChildren()",
+        "extra": {
+          ".validate": "true"
+        },
+        "$other": {
+          ".validate": "false"
+        },
+        "name": {
+          ".validate": "newData.isString()"
+        },
+        "owner": {
+          ".validate": "newData.isString()"
+        },
+        "status": {
+          ".validate": "newData.isString()"
+        },
+        "_public": {
+          ".validate": "newData.isBoolean()"
+        },
+        "_created": {
+          ".validate": "newData.isNumber()"
+        },
+        "_closed": {
+          ".validate": "newData.isNumber()"
+        },
+        ".write": "data.val() == null && auth != null && newData.child('owner').val() == auth.uid || data.val() != null && newData.val() != null && auth != null && data.child('owner').val() == auth.uid || data.val() != null && newData.val() == null && auth != null && data.child('owner').val() == auth.uid"
+      }
+    }
+  }
+}

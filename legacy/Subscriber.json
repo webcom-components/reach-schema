@@ -1,0 +1,22 @@
+{
+  "id": "Subscriber",
+  "$schema": "https://webcom-components.github.io/reach-schema/legacy/Subscriber.json",
+  "description": "Stream Subscriber. Identified by the device's ID as defined in '*reach/userList/__USER_ID__/connectedList/__DEVICE_ID__/*'",
+  "properties": {
+    "peercoId": {
+      "description": "PeerConnection identifier",
+      "type": "string"
+    },
+    "peercoRef": {
+      "description": "PeerConnection reference (Webcom path within /webrtc/)",
+      "type": "string"
+    },
+    "ts": {
+      "type": "string"
+    },
+    "userId": {
+      "description": "Subscriber's user id",
+      "type": "string"
+    }
+  }
+}

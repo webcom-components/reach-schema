@@ -1,0 +1,41 @@
+{
+  "id": "Invitation",
+  "$schema": "https://webcom-components.github.io/reach-schema/draft-00/Invitation.json",
+  "description": "An invitation\n\n---\n- read/write by user & sender only",
+  "properties": {
+    "from": {
+      "description": "__$userId__ of the sender",
+      "$ref": "UserId.json"
+    },
+    "room": {
+      "description": "__$roomId__ of the *&lt;Room&gt;*",
+      "$ref": "RoomId.json"
+    },
+    "status": {
+      "enum": [
+        "ONGOING",
+        "ACCEPTED",
+        "REJECTED",
+        "CANCELED"
+      ]
+    },
+    "topic": {
+      "description": "Optional text message",
+      "type": "string"
+    },
+    "_created": {
+      "description": "The invitation creation timestamp",
+      "type": "number"
+    },
+    "_ended": {
+      "description": "The invitation rejection/cancelation timestamp",
+      "type": "number"
+    }
+  },
+  "required": [
+    "from",
+    "roomId",
+    "status",
+    "_created"
+  ]
+}

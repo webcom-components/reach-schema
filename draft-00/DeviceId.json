@@ -1,0 +1,6 @@
+{
+  "id": "DeviceId",
+  "$schema": "https://webcom-components.github.io/reach-schema/draft-00/DeviceId.json",
+  "description": "&lt;User&gt;'s device id. (mix of app instance id and physical device id)",
+  "type": "string"
+}

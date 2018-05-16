@@ -1,0 +1,31 @@
+{
+  "id": "Stream",
+  "$schema": "https://webcom-components.github.io/reach-schema/draft-00/Stream.json",
+  "description": "Published stream. The stream id is the path's name (/rooms/__$roomId__/streams/__$streamId__/)",
+  "properties": {
+    "from": {
+		"description": "The __$userId__ of the participant publishing this stream",
+		"$ref": "UserId.json"
+    },
+    "device": {
+		"description": "The __$deviceId__ of the device used to publish this stream",
+		"$ref": "DeviceId.json"
+    },
+    "type": {
+		"description": "The type of stream",
+		"enum": ["audio", "video", "audio-video", "chat"]
+    },
+	"muted": {
+		"description": "The mute status of this stream",
+		"type": "object",
+		"properties": {
+			"audio": {
+				"type": "boolean"
+			},
+			"video": {
+				"type": "boolean"
+			}
+		}
+    }
+  }
+}

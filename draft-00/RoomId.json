@@ -1,0 +1,6 @@
+{
+  "id": "RoomId",
+  "$schema": "https://webcom-components.github.io/reach-schema/draft-00/RoomId.json",
+  "description": "&lt;Room&gt;'s uid. Should be the push id of the room",
+  "type": "string"
+}

@@ -1,0 +1,40 @@
+{
+  "id": "Stream",
+  "$schema": "https://webcom-components.github.io/reach-schema/legacy/Stream.json",
+  "description": "Stream published by a participant. The stream id is a concatenation of the __USER_ID__ & '-stream'.",
+  "properties": {
+    "actionType": {
+      "description": "Type of stream",
+      "enum": ["autio", "video", "audio-video", "chat"]
+    },
+    "appInstanceId": {
+      "description": "The device's ID as defined in '*reach/userList/__USER_ID__/connectedList/__DEVICE_ID__/*'",
+      "type": "string"
+    },
+    "from": {
+      "description": "Id of the stream publisher as defined in '*reach/userList/__USER_ID__/*'",
+      "type": "string"
+    },
+    "subscriberList": {
+      "description": "List of participants subscribing to the stream",
+      "type": "array",
+      "items": {"$ref": "Subscriber.json"}
+    },
+    "timestamp_creation": {
+      "description": "The invitation creation timestamp",
+      "type": "number"
+    },
+    "timestamp_end": {
+      "description": "The invitation rejection/cancelation timestamp",
+      "type": "number"
+    },
+    "topic": {
+      "description": "The type of the stream",
+      "enum": ["audio", "video", "audio-video", "chat"]
+    }
+  },
+  "required": [
+    "from",
+    "room"
+  ]
+}

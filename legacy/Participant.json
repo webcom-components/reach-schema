@@ -1,0 +1,15 @@
+{
+  "id": "Participant",
+  "$schema": "https://webcom-components.github.io/reach-schema/legacy/Participant.json",
+  "properties": {
+    "connected": {
+      "description": "Is the participant connected",
+      "type": "boolean"
+    },
+    "wasInsideRoom": {
+      "description": "Was the participant connected to the room at some point",
+      "type": "boolean"
+    }
+  },
+  "required": ["connected", "wasInsideRoom"]
+}

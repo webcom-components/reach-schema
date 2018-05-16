@@ -1,0 +1,18 @@
+{
+  "id": "PeerConnectionPart",
+  "$schema": "https://webcom-components.github.io/reach-schema/legacy/PeerConnectionPart.json",
+  "properties": {
+    "sdpAnswer": {
+      "description": "SDP answer",
+      "$ref": "SDP.json"
+    },
+    "sdpOffer": {
+      "description": "SDP offer",
+      "$ref": "SDP.json"
+    },
+    "iceCandidatesList": {
+      "type": "array",
+      "items": {"$ref": "ICECandidate.json"}
+    }
+  }
+}

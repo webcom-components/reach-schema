@@ -1,0 +1,23 @@
+{
+  "id": "User",
+  "$schema": "https://webcom-components.github.io/reach-schema/draft-00/User.json",
+  "description": "The user\n\n---\nThe user id (/users/__$userId__/) can be:\n- the simplelogin id if the user is authenticated with the Webcom login/password\n- the oauth id if using oauth\n- a push id for anonymous",
+  "properties": {
+    "name": {
+      "description": "User's display name",
+      "type": "string"
+    },
+    "status": {
+      "description": "User status. Aggregates user devices statuses",
+      "type": "string"
+    },
+    "lastSeen": {
+      "description": "Last seen timestamp. Can be used for cleaning purposes. Replaces 'wasInsideReach'.",
+      "type": "number"
+    },
+    "provider": {
+      "description": "User provider. The method used to log in: password, anonymous, ...'.",
+      "type": "string"
+    }
+  }
+}
